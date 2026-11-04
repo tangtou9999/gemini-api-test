@@ -1,107 +1,1515 @@
 <!DOCTYPE html>
-<html lang="zh">
+<html lang="zh-CN">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Gemini API 测试聊天</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>越南语趣味大剧场 · 1.0 正式版</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/lamejs/1.2.1/lame.min.js" async defer crossorigin="anonymous"></script>
 <style>
-:root{--bg:#f5f6f8;--card:#fff;--tx:#1f2328;--mut:#6b7280;--pri:#2563eb;--ok:#16a34a;--err:#dc2626;--bd:#e5e7eb}
-@media(prefers-color-scheme:dark){:root{--bg:#111318;--card:#1b1e25;--tx:#e8eaed;--mut:#9aa0a6;--bd:#2c303a}}
+:root{--bg:#07080c;--card:#11131b;--bd:#252a3d;--gold:#f5b13d;--pink:#ec4899;--green:#10b981;--blue:#38bdf8;--purp:#a855f7}
 *{box-sizing:border-box}
-body{margin:0;font:15px/1.5 -apple-system,"PingFang SC","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--tx);display:flex;flex-direction:column;height:100vh;height:100dvh}
-.top{padding:10px 12px;background:var(--card);border-bottom:1px solid var(--bd)}
-.row{display:flex;gap:6px;margin-top:6px}
-input{flex:1;min-width:0;padding:9px;border:1px solid var(--bd);border-radius:8px;background:var(--bg);color:var(--tx);font-size:15px}
-button{padding:9px 12px;border:0;border-radius:8px;background:var(--pri);color:#fff;font-size:14px}
-button.g{background:var(--mut)}
-button:disabled{opacity:.5}
-#log{flex:1;overflow-y:auto;padding:12px;display:flex;flex-direction:column;gap:10px}
-.m{max-width:88%;padding:9px 12px;border-radius:12px;white-space:pre-wrap;word-break:break-word}
-.u{align-self:flex-end;background:var(--pri);color:#fff}
-.a{align-self:flex-start;background:var(--card);border:1px solid var(--bd)}
-.s{align-self:center;max-width:96%;font-size:13px;color:var(--mut);background:none}
-.e{align-self:stretch;max-width:100%;background:rgba(220,38,38,.08);border:1px solid var(--err);color:var(--tx)}
-.e b{color:var(--err)}
-.k{align-self:stretch;max-width:100%;background:rgba(22,163,74,.1);border:1px solid var(--ok)}
-.bar{display:flex;gap:6px;padding:10px 12px;background:var(--card);border-top:1px solid var(--bd)}
-small{color:var(--mut)}
+body{background:var(--bg);color:#e5e7eb;font-family:-apple-system,"PingFang SC","Noto Sans SC",sans-serif;margin:0;padding:10px;max-width:980px;margin-inline:auto;overflow-x:hidden;line-height:1.45}
+.box{background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:12px;margin-bottom:12px}
+input,select,textarea{background:#090b10;border:1px solid var(--bd);border-radius:9px;padding:7px 10px;color:#fff;font-size:12px;outline:none;width:100%;font-family:inherit}
+input:focus,select:focus,textarea:focus{border-color:var(--gold)}
+.btn{padding:8px 12px;border-radius:9px;font-size:12px;font-weight:700;cursor:pointer;border:1px solid var(--bd);background:#171a26;color:#fff;transition:.15s;display:inline-flex;align-items:center;justify-content:center;gap:5px;white-space:nowrap;text-decoration:none}
+.btn:active{transform:scale(.98)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn-gold{background:linear-gradient(90deg,#f5b13d,#eab308);color:#000;border:0;font-weight:900;box-shadow:0 4px 15px rgba(245,177,61,.3)}
+.btn-pink{background:linear-gradient(90deg,#ec4899,#8b5cf6);color:#fff;border:0;font-weight:800}
+.btn-green{background:var(--green);color:#000;border-color:var(--green);font-weight:800}
+.btn-blue{background:rgba(56,189,248,.16);color:var(--blue);border-color:rgba(56,189,248,.4)}
+
+/* 内置零依赖工具类（彻底替代外部 CDN，保证 0.01 秒瞬开不白屏） */
+.hidden{display:none!important}
+.flex{display:flex}.inline-flex{display:inline-flex}.grid{display:grid}.block{display:block}
+.flex-col{flex-direction:column}.flex-row{flex-direction:row}.flex-wrap{flex-wrap:wrap}.flex-1{flex:1 1 0%}.shrink-0{flex-shrink:0}
+.items-center{align-items:center}.justify-between{justify-content:space-between}.justify-center{justify-content:center}
+.gap-1{gap:4px}.gap-1\.5{gap:6px}.gap-2{gap:8px}.gap-3{gap:12px}
+.space-y-1>*+*{margin-top:4px}
+.grid-cols-1{grid-template-columns:repeat(1,minmax(0,1fr))}
+.grid-cols-2{grid-template-columns:repeat(2,minmax(0,1fr))}
+.w-full{width:100%}.h-9{height:36px}.min-w-0{min-width:0}
+.max-w-\[260px\]{max-width:260px}.max-h-\[195px\]{max-height:195px}.max-h-\[340px\]{max-height:340px}.max-h-\[520px\]{max-height:520px}.max-h-\[55vh\]{max-height:55vh}
+.aspect-square{aspect-ratio:1/1}
+.p-1\.5{padding:6px}.p-2{padding:8px}.p-2\.5{padding:10px}
+.px-1{padding-left:4px;padding-right:4px}.px-2{padding-left:8px;padding-right:8px}.px-2\.5{padding-left:10px;padding-right:10px}.px-3{padding-left:12px;padding-right:12px}.px-4{padding-left:16px;padding-right:16px}.px-5{padding-left:20px;padding-right:20px}
+.py-0\.5{padding-top:2px;padding-bottom:2px}.py-1{padding-top:4px;padding-bottom:4px}.py-1\.5{padding-top:6px;padding-bottom:6px}.py-2{padding-top:8px;padding-bottom:8px}.py-2\.5{padding-top:10px;padding-bottom:10px}.py-3{padding-top:12px;padding-bottom:12px}
+.pt-2\.5{padding-top:10px}.pr-1{padding-right:4px}
+.mb-1{margin-bottom:4px}.mb-1\.5{margin-bottom:6px}.mb-2{margin-bottom:8px}.mb-2\.5{margin-bottom:10px}.mb-3{margin-bottom:12px}
+.mt-0\.5{margin-top:2px}.mt-1{margin-top:4px}.mt-2{margin-top:8px}.mt-3{margin-top:12px}
+.text-\[9px\]{font-size:9px}.text-\[10px\]{font-size:10px}.text-\[11px\]{font-size:11px}.text-xs{font-size:12px}.text-sm{font-size:14px}.text-base{font-size:16px}
+.font-medium{font-weight:500}.font-bold{font-weight:700}.font-extrabold{font-weight:800}.font-black{font-weight:900}.font-mono{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace}
+.text-center{text-align:center}.text-left{text-align:left}.truncate{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.leading-relaxed{line-height:1.6}.select-all{user-select:all}
+.text-white{color:#fff}.text-slate-300{color:#cbd5e1}.text-slate-400{color:#94a3b8}
+.text-amber-200{color:#fde68a}.text-amber-300{color:#fcd34d}.text-amber-400{color:#fbbf24}
+.text-emerald-300{color:#6ee7b7}.text-emerald-400{color:#34d399}
+.text-sky-300{color:#7dd3fc}.text-sky-400{color:#38bdf8}
+.text-pink-400{color:#f472b6}.text-rose-200{color:#fecdd3}.text-rose-300{color:#fda4af}.text-rose-400{color:#fb7185}
+.bg-black{background-color:#000}.bg-black\/50{background-color:rgba(0,0,0,.5)}.bg-black\/60{background-color:rgba(0,0,0,.6)}.bg-black\/70{background-color:rgba(0,0,0,.7)}.bg-\[\#090b10\]{background-color:#090b10}
+.bg-amber-500\/20{background-color:rgba(245,158,11,.2)}.bg-amber-500\/30{background-color:rgba(245,158,11,.3)}
+.bg-emerald-500\/20{background-color:rgba(16,185,129,.2)}.bg-rose-500\/30{background-color:rgba(244,63,94,.3)}.bg-white\/10{background-color:rgba(255,255,255,.1)}
+.border{border:1px solid var(--bd)}.border-0{border:0}.border-t{border-top:1px solid rgba(255,255,255,.1)}
+.border-white\/10{border-color:rgba(255,255,255,.1)}.border-white\/15{border-color:rgba(255,255,255,.15)}
+.border-amber-400{border-color:#fbbf24}.border-amber-400\/50{border-color:rgba(251,191,36,.5)}
+.border-emerald-500\/30{border-color:rgba(16,185,129,.3)}.border-emerald-500\/40{border-color:rgba(16,185,129,.4)}.border-sky-500\/30{border-color:rgba(14,165,233,.3)}
+.rounded{border-radius:6px}.rounded-lg{border-radius:8px}.rounded-xl{border-radius:12px}
+.overflow-y-auto{overflow-y:auto}.relative{position:relative}.cursor-pointer{cursor:pointer}
+
+@media (min-width:640px){
+    .sm\:text-lg{font-size:18px}
+    .sm\:grid-cols-2{grid-template-columns:repeat(2,minmax(0,1fr))}
+    .sm\:grid-cols-5{grid-template-columns:repeat(5,minmax(0,1fr))}
+    .sm\:grid-cols-12{grid-template-columns:repeat(12,minmax(0,1fr))}
+    .sm\:col-span-2{grid-column:span 2/span 2}
+    .sm\:col-span-3{grid-column:span 3/span 3}
+    .sm\:col-span-4{grid-column:span 4/span 4}
+    .sm\:flex-row{flex-direction:row}
+    .sm\:w-auto{width:auto}
+    .sm\:flex-initial{flex:0 1 auto}
+}
+@media (min-width:768px){
+    .md\:grid-cols-2{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media (min-width:1024px){
+    .lg\:grid-cols-3{grid-template-columns:repeat(3,minmax(0,1fr))}
+    .lg\:grid-cols-12{grid-template-columns:repeat(12,minmax(0,1fr))}
+    .lg\:col-span-8{grid-column:span 8/span 8}
+    .lg\:col-span-4{grid-column:span 4/span 4}
+}
+
+.tl-wrap{background:#080a0f;border:1px solid var(--bd);border-radius:12px;overflow:hidden}
+.tl-ruler{height:24px;background:#0e111a;border-bottom:1px solid var(--bd);position:relative;overflow:hidden;font-family:monospace;font-size:10px;color:#9ca3af}
+.tl-row{display:flex;border-bottom:1px solid rgba(255,255,255,.05);min-height:42px}
+.tl-head{width:142px;flex-shrink:0;background:#0e111a;border-right:1px solid var(--bd);padding:4px 7px;display:flex;flex-direction:column;justify-content:center}
+.tl-lane{flex:1;position:relative;overflow-x:auto;background-image:linear-gradient(to right,rgba(255,255,255,.03) 1px,transparent 1px);background-size:44px 100%;min-height:42px}
+.tl-clip{position:absolute;top:4px;bottom:4px;border-radius:7px;padding:3px 6px;font-size:10px;line-height:1.2;cursor:grab;user-select:none;overflow:hidden;display:flex;flex-direction:column;justify-content:space-between;box-shadow:0 2px 6px rgba(0,0,0,.6);touch-action:none}
+.tl-clip.active{outline:2px solid #fff;z-index:15}
+.playhead{position:absolute;top:0;bottom:0;width:2px;background:#ef4444;z-index:25;pointer-events:none}
+
+.shot-card{background:#0b0d14;border:1px solid var(--bd);border-radius:10px;padding:10px;margin-bottom:8px;transition:.15s}
+.shot-card.ok{border-color:rgba(16,185,129,.55);background:rgba(16,185,129,.04)}
+.shot-card.err{border-color:rgba(239,68,68,.75);background:rgba(239,68,68,.08)}
+.shot-card.ing{border-color:rgba(245,177,61,.75);background:rgba(245,177,61,.06)}
+.ms-badge{font-family:monospace;background:rgba(245,177,61,.18);color:var(--gold);border:1px solid rgba(245,177,61,.4);padding:2px 6px;border-radius:5px;font-size:11px;font-weight:700}
+.pos-badge{font-family:monospace;background:rgba(56,189,248,.15);color:var(--blue);border:1px solid rgba(56,189,248,.35);padding:2px 6px;border-radius:5px;font-size:11px}
+.sfx-pill{background:rgba(16,185,129,.12);border:1px dashed rgba(16,185,129,.45);border-radius:8px;padding:6px 10px;font-size:12px;display:flex;align-items:center;justify-content:space-between;gap:8px}
+.seed-pill{padding:6px 10px;border-radius:9px;background:#090b10;border:1px solid var(--bd);font-size:11px;cursor:pointer;transition:.15s;text-align:left}
+.seed-pill:hover,.seed-pill.on{border-color:var(--gold);background:rgba(245,177,61,.12)}
 </style>
 </head>
 <body>
-<div class="top">
-  <b>Gemini API 测试</b> <small>（密钥只在本页使用，不会保存）</small>
-  <div class="row"><input id="key" type="password" placeholder="粘贴你的 API Key（通常以 AIza 开头）" autocomplete="off"></div>
-  <div class="row">
-    <input id="model" value="gemini-3.8-flash" placeholder="模型名称">
-    <button class="g" id="chk">一键检测</button>
-  </div>
+
+<!-- 导出弹窗 -->
+<div id="exportModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.92);z-index:9999;align-items:center;justify-content:center;padding:16px">
+    <div style="background:#11131b;border:1px solid var(--gold);border-radius:16px;max-width:540px;width:100%;padding:16px;text-align:center">
+        <div id="expTitle" class="text-sm font-bold text-amber-400 mb-1">📦 导出文件已就绪</div>
+        <div id="expSub" class="text-xs text-slate-400 mb-3">可直接下载或一键复制发给 Claude / 剪映使用</div>
+        <div id="expMediaBox" class="mb-3 flex flex-col justify-center bg-black rounded-xl p-2 border border-white/10 max-h-[55vh] overflow-y-auto"></div>
+        <div class="flex gap-2 flex-wrap">
+            <a id="expDlBtn" href="#" download class="btn btn-green flex-1 py-2.5">📥 立即下载文件</a>
+            <button type="button" onclick="copyModalText()" id="expCopyBtn" class="btn btn-gold py-2.5 hidden">📋 一键复制全文</button>
+            <button type="button" onclick="$('exportModal').style.display='none'" class="btn py-2.5">关闭</button>
+        </div>
+    </div>
 </div>
-<div id="log"><div class="m s">① 粘贴 API Key → ② 点「一键检测」看密钥是否有效 → ③ 在下面发消息聊天。出错时我会用中文告诉你原因。</div></div>
-<div class="bar"><input id="msg" placeholder="输入消息，例如：你好"><button id="send">发送</button></div>
+
+<!-- 顶部导航与现成成片剧目切换 -->
+<div class="box" style="border-color:rgba(245,177,61,.7)" id="keyBox">
+    <div class="text-xs font-extrabold text-amber-400 mb-1">🔑 第一步：填写 Gemini API Key（只需填一次，只保存在这台手机的浏览器里）</div>
+    <div class="flex gap-2">
+        <input id="apiKeyInput" type="password" autocomplete="off" placeholder="在这里粘贴你的 API Key" style="flex:1;min-width:0">
+        <button type="button" onclick="saveKeyFromInput()" class="btn btn-gold py-1 px-3 text-xs">保存</button>
+    </div>
+    <div id="apiKeyStatus" class="text-[11px] mt-1 text-slate-300"></div>
+</div>
+
+<div class="box" style="border-color:rgba(245,177,61,.55)">
+    <div id="topNotice" class="hidden mb-2 p-2.5 rounded-lg bg-amber-500/20 border border-amber-400 text-xs text-amber-200 font-bold text-center"></div>
+    <div class="flex items-center justify-between flex-wrap gap-2">
+        <div>
+            <h1 class="text-base sm:text-lg font-extrabold text-white flex items-center gap-2">
+                🇻🇳 越南语趣味大剧场 · 1.0 正式版
+                <span class="text-[11px] bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 px-2 py-0.5 rounded">短平快50秒 · 贪吃蛇连环词 · 粤语汉越词 · 12人江湖群像</span>
+            </h1>
+            <p class="text-xs text-slate-300 mt-0.5">
+                ✨ <b>四大铁律已焊死</b>：① 零废话(每句≤22字) ② 成人江湖高笑点(坑反派贾总/撩单身美女肖老师) ③ 贪吃蛇跨集连环累加 ④ 每集扎实学会 4~5 个高频词句！
+            </p>
+        </div>
+        <div class="flex gap-1.5 flex-wrap">
+            <button type="button" onclick="loadPresetDrama('ep01_jia_bao')" class="btn btn-gold">🔥 EP01:《坑贾总请肖老师 Đi ăn cơm (学5词)》</button>
+            <button type="button" onclick="loadPresetDrama('ep02_cantonese_bill')" class="btn btn-blue">💎 EP02:《粤语汉越词：贾总相亲逃单 Tính tiền (学5词)》</button>
+            <button type="button" onclick="loadPresetDrama('ep03_xiaoyu_landlord')" class="btn btn-pink">⚡ EP03:《刺头小宇护苏姐：怒怼黑心房东 Lừa đảo (学5词)》</button>
+            <button type="button" onclick="openJsonImportModal()" class="btn btn-green">📋 粘贴新剧本JSON(免改代码)</button>
+        </div>
+    </div>
+</div>
+
+<!-- 免改代码导入新剧本弹窗 -->
+<div id="jsonImportModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.92);z-index:9999;align-items:center;justify-content:center;padding:16px">
+    <div style="background:#11131b;border:1px solid var(--green);border-radius:16px;max-width:580px;width:100%;padding:16px">
+        <div class="text-sm font-bold text-emerald-400 mb-1">📋 免改代码 · 一键粘贴载入新剧集数据包</div>
+        <div class="text-xs text-slate-400 mb-2">以后网页外壳永远不用重写！直接把新剧集 JSON 粘贴在下方即可一秒排轨配音：</div>
+        <textarea id="jsonImportTextarea" rows="10" class="w-full font-mono text-xs bg-black text-emerald-300 p-2 rounded border border-white/15 mb-3" placeholder='粘贴 {"title":"...","shots":[...]} 格式剧本数据'></textarea>
+        <div class="flex gap-2">
+            <button type="button" onclick="applyImportedJsonDrama()" class="btn btn-green flex-1 py-2.5">✅ 立即载入并排好时间轴</button>
+            <button type="button" onclick="$('jsonImportModal').style.display='none'" class="btn py-2.5">关闭</button>
+        </div>
+    </div>
+</div>
+
+<!-- ♾️ 无限复制·10期连载贪吃蛇剧本裂变器 -->
+<div class="box" style="border-color:rgba(236,72,153,.55);background:linear-gradient(180deg,rgba(236,72,153,.08),rgba(17,19,27,.95))">
+    <div class="flex items-center justify-between flex-wrap gap-2 mb-2">
+        <div>
+            <span class="text-xs font-extrabold text-pink-400">
+                ♾️ 10期「贪吃蛇连环累加 + 四棒接力笑点」种子库（每集复习上集旧词 + 解锁3~4个新词 + 短平快50秒零废话！）
+            </span>
+        </div>
+        <span class="text-[11px] text-amber-300 font-mono">吹牛显摆 ➔ 捧哏拆穿 ➔ 脱口秀毒舌 ➔ 肖老师纠音反转</span>
+    </div>
+
+    <!-- 10期种子卡片 -->
+    <div id="seedCurriculumGrid" class="grid grid-cols-2 sm:grid-cols-5 gap-1.5 mb-2.5"></div>
+
+    <!-- 自定义多词连环一键生成栏 -->
+    <div class="grid grid-cols-1 sm:grid-cols-12 gap-2 items-center bg-black/50 p-2 rounded-xl border border-white/10">
+        <div class="sm:col-span-3">
+            <input id="seedWordA" value="đi(去) + ăn cơm(吃饭) ➔ đi ăn cơm" placeholder="上集旧词+本集新词链">
+        </div>
+        <div class="sm:col-span-4">
+            <input id="seedMisunderstand" value="相声组忽悠假表贾总对美女肖老师喊『Em bao(我买单)』是夸她漂亮" placeholder="江湖冲突/整蛊包袱">
+        </div>
+        <div class="sm:col-span-2">
+            <input id="seedWordB" value="em bao(我请客) + đồ ngốc(傻瓜)" placeholder="高潮反转词组">
+        </div>
+        <div class="sm:col-span-3">
+            <button type="button" id="aiGenEpisodeBtn" onclick="generateSnowballEpisodeByAI()" class="btn btn-pink w-full py-2">
+                ✨ 生成50秒高密度新集
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- 12位角色声纹自由换音色 & 单独试听台 -->
+<div class="box" style="border-color:rgba(56,189,248,.5)">
+    <div class="flex items-center justify-between flex-wrap gap-2 mb-2">
+        <span class="text-xs font-extrabold text-sky-400">
+            🎛️ 当前出场角色声纹自由切换 & 单独试听台（觉得谁声音不贴脸，直接下拉换音色点「🔊试听」！）
+        </span>
+        <button type="button" onclick="auditionShotById(currentDrama.shots[0].id, true)" class="btn btn-gold py-1 px-3 text-xs">
+            ⚡ 立即试听第1句配音 (秒出声)
+        </button>
+    </div>
+    <div id="roleVoiceSwitcherGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 max-h-[195px] overflow-y-auto pr-1"></div>
+</div>
+
+<!-- 全剧多轨合成总控 -->
+<div class="box" style="background:linear-gradient(90deg,rgba(245,177,61,.14),rgba(16,185,129,.12));border-color:var(--gold)">
+    <div class="flex flex-col sm:flex-row items-center justify-between gap-3">
+        <div class="flex-1">
+            <div class="text-sm font-black text-amber-300">
+                🎙️ 一键合成全集多人抢话配音 + 导出 Claude 毫秒级画面渲染包
+            </div>
+            <div class="text-xs text-slate-300 mt-1">
+                内置母带级胸腔共鸣 EQ、3D 教室座位声道定位（左/中/右抢话）与防卡死自动切换保护。
+            </div>
+        </div>
+        <div class="flex gap-2 flex-wrap w-full sm:w-auto">
+            <button type="button" id="synthAllBtn" onclick="synthesizeAllEnsembleVoices()" class="btn btn-gold py-3 px-5 text-sm flex-1 sm:flex-initial">
+                🚀 一键合成全集配音 (自动防卡死)
+            </button>
+            <button type="button" onclick="forceMixAvailableShotsNow()" class="btn btn-green py-3 px-4 text-xs">
+                ⚡ 立即把已录好的句子合成播放
+            </button>
+        </div>
+    </div>
+
+    <div class="mt-3 pt-2.5 border-t border-white/10 flex flex-wrap items-center justify-between gap-2 text-xs">
+        <div class="flex items-center gap-2 flex-wrap">
+            <span class="text-slate-400">🏛️ 声场模式：</span>
+            <select id="masterStylePreset" onchange="if(mixedMasterBuffer) rebuildMasterMixOnly()" style="width:245px;padding:4px 8px">
+                <option value="classroom" selected>🏫 真实自习室/教室环境 (纯净人声+室内反射)</option>
+                <option value="clean">🎙️ 100% 录音棚干声母带 (最适合进剪映/Claude)</option>
+                <option value="michelin">🎻 电影大片深沉母带 (含低音大提琴铺底)</option>
+            </select>
+        </div>
+        <div class="flex gap-1.5 flex-wrap">
+            <button type="button" onclick="playTimelinePreview()" class="btn btn-blue py-1.5">▶ 播放已合母带</button>
+            <button type="button" onclick="stopTimelinePreview()" class="btn py-1.5">⏹ 停止</button>
+            <button type="button" onclick="downloadEnsembleMp3()" class="btn btn-green py-1.5">📥 下载多人混音 MP3</button>
+            <button type="button" onclick="downloadSfxCueSheet()" class="btn btn-gold py-1.5">🔔 下载秒级音效打点单</button>
+            <button type="button" onclick="downloadDirectorScript('json')" class="btn btn-pink py-1.5">🤖 下载Claude画面包 (.json)</button>
+        </div>
+    </div>
+
+    <div id="synthProgressBar" class="hidden mt-2 p-2.5 rounded-lg bg-black/70 border border-amber-400/50 text-xs text-amber-300 font-mono"></div>
+    <audio id="quickMasterPlayer" controls class="w-full h-9 mt-2 hidden rounded"></audio>
+</div>
+
+<!-- 剪映真音效秒级打点清单 -->
+<div class="box" style="border-color:rgba(16,185,129,.5)">
+    <div class="flex items-center justify-between flex-wrap gap-2 mb-2">
+        <span class="text-xs font-extrabold text-emerald-400">
+            🔔 后期配音/剪映专用：秒级动作音效打点清单（不在音轨混假音效，方便你在剪映里按秒数贴真音效）
+        </span>
+        <div class="flex gap-1.5">
+            <button type="button" onclick="addSfxCueInteractive()" class="btn btn-blue py-1">＋ 新增秒级打点</button>
+            <button type="button" onclick="copySfxCueSheet()" class="btn btn-gold py-1">📋 复制打点单</button>
+            <button type="button" onclick="downloadSfxCueSheet()" class="btn btn-green py-1">📥 下载打点单 (.txt)</button>
+        </div>
+    </div>
+    <div id="sfxCueListBox" class="grid grid-cols-1 md:grid-cols-2 gap-2"></div>
+</div>
+
+<!-- 多轨时间轴 -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-3 mb-3">
+    <div class="lg:col-span-12 box" style="margin-bottom:0">
+        <div class="flex items-center justify-between flex-wrap gap-2 mb-2">
+            <div class="text-xs font-extrabold text-amber-400" id="dramaTitleText">
+                🎬 当前工程：《我“đi”你家 & 全班抢教“傻瓜(đồ ngốc)”》
+            </div>
+            <label class="text-[11px] text-emerald-300 flex items-center gap-1 cursor-pointer">
+                <input type="checkbox" id="autoOverlapChk" checked onchange="recalcMillisecondTimeline()">
+                ⚡ 开启同学抢话/起哄真实叠音 (-280ms)
+            </label>
+        </div>
+
+        <div class="tl-wrap max-h-[340px] overflow-y-auto">
+            <div class="tl-ruler" id="tlRuler"></div>
+            <div id="tlTracksBox" class="relative">
+                <div id="playhead" class="playhead" style="left:142px"></div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<!-- 底部：逐句试听、换声纹、改台词 + Claude 毫秒级画面指令 -->
+<div class="box" style="border-color:rgba(236,72,153,.45)">
+    <div class="flex items-center justify-between flex-wrap gap-2 mb-2">
+        <div>
+            <span class="text-xs font-extrabold text-pink-400">
+                📜 逐句试听 / 换声纹 / 改台词 / 毫秒级 Claude 画面渲染总表（共 <span id="shotTotalCount">17</span> 句）
+            </span>
+        </div>
+        <div class="flex gap-1.5 flex-wrap">
+            <button type="button" onclick="copyFullDirectorPrompt()" class="btn btn-gold">📋 复制全剧脚本与指令</button>
+            <button type="button" onclick="downloadDirectorScript('md')" class="btn btn-green">📥 下载完整剧本 (.txt)</button>
+            <button type="button" onclick="downloadDirectorScript('json')" class="btn btn-pink">🤖 下载给Claude渲染的JSON</button>
+        </div>
+    </div>
+    <div id="shotSheetContainer" class="max-h-[520px] overflow-y-auto pr-1"></div>
+</div>
+
 <script>
-const $=id=>document.getElementById(id),log=$('log');
-const BASE='https://generativelanguage.googleapis.com/v1beta/';
-let hist=[];
-function add(t,c,html){const d=document.createElement('div');d.className='m '+c;if(html)d.innerHTML=t;else d.textContent=t;log.appendChild(d);log.scrollTop=log.scrollHeight;return d}
-const esc=s=>String(s).replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
-
-function explain(status,body,netErr){
-  if(netErr){
-    return `<b>❌ 请求没能发出去（网络层失败）</b><br>浏览器根本没连上谷歌服务器，还没到“密钥对不对”这一步。可能原因：<br>1. 当前网络访问不了 <code>generativelanguage.googleapis.com</code>（需要能访问谷歌的网络/VPN；开了 VPN 请确认是全局或该域名走代理）<br>2. 你是在 Claude 里的预览/发布页打开的——这类页面禁止访问外部网站。请把这个文件<b>下载后用手机/电脑浏览器直接打开</b>，或放到你自己的 GitHub Pages 上<br>3. 浏览器插件或防火墙拦截<br><small>原始信息：${esc(netErr)}</small>`;
-  }
-  const e=(body&&body.error)||{},msg=e.message||'',st=e.status||'';
-  let why='';
-  if(/location is not supported/i.test(msg)) why='<b>当前所在地区/出口 IP 不被 Gemini API 支持。</b>换一个受支持地区的网络（VPN 节点）再试。';
-  else if(status===400&&(/API key not valid|API_KEY_INVALID/i.test(msg)||/API_KEY_INVALID/.test(JSON.stringify(e.details||''))))why='<b>API Key 无效。</b>可能复制错了（多了空格/少了字符）、已被删除，或者这不是 Gemini 的 Key。';
-  else if(status===400&&/billing|free tier/i.test(msg))why='<b>该账号/地区无法使用免费额度，需要开通结算（billing）。</b>';
-  else if(status===400)why='<b>请求格式有问题。</b>看下面原始信息。';
-  else if(status===401)why='<b>身份验证失败。</b>Key 不对或缺失。';
-  else if(status===403)why='<b>权限不足。</b>常见原因：该项目没有启用 Generative Language API；Key 被限制了来源/应用；Key 被封或泄露后被停用。建议到 Google AI Studio 重新创建一个 Key。';
-  else if(status===404)why='<b>模型名称不存在或已下线。</b>点「一键检测」查看你的 Key 能用的模型，把其中一个名字填到“模型名称”框。';
-  else if(status===429)why='<b>请求太多或额度用完（配额超限）。</b>等一会儿再试；如果一直这样，说明免费额度为 0 或已耗尽，需要检查配额/开通结算。';
-  else if(status>=500)why='<b>谷歌服务器暂时出问题。</b>稍后重试，或换个模型。';
-  else why='<b>未知错误。</b>';
-  return `<b>❌ 失败（HTTP ${status}${st?' · '+esc(st):''}）</b><br>${why}<br><small>谷歌返回的原文：${esc(msg||JSON.stringify(body))}</small>`;
+let apiKey = "";
+try { apiKey = localStorage.getItem('gkey') || ""; } catch (e) {}
+const TEXT_MODEL = 'gemini-flash-latest';
+function showKeyStatus() {
+    const el = document.getElementById('apiKeyStatus');
+    if (el) el.textContent = apiKey ? '✅ Key 已保存（想更换，直接重新粘贴再点保存）' : '⚠️ 还没有填写 Key，填好后点「保存」';
 }
-
-async function call(path,opt){
-  const key=$('key').value.trim();
-  if(!key){add('<b>⚠️ 还没填 API Key。</b>先在上面粘贴密钥。','e',1);return null}
-  let r;
-  try{r=await fetch(BASE+path,{...opt,headers:{'Content-Type':'application/json','x-goog-api-key':key}})}
-  catch(err){add(explain(0,null,err.message||err),'e',1);return null}
-  let j=null;try{j=await r.json()}catch(_){}
-  if(!r.ok){add(explain(r.status,j),'e',1);return null}
-  return j;
+function saveKeyFromInput() {
+    const v = (document.getElementById('apiKeyInput').value || '').trim();
+    if (!v) { showKeyStatus(); return; }
+    apiKey = v;
+    try { localStorage.setItem('gkey', apiKey); } catch (e) {}
+    document.getElementById('apiKeyInput').value = '';
+    showKeyStatus();
 }
+function ensureKey() {
+    if (!apiKey) {
+        const box = document.getElementById('keyBox');
+        if (box) box.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        showKeyStatus();
+        throw new Error('还没有填写 API Key，请先在页面最上面填写并保存');
+    }
+}
+function resetKey() {
+    apiKey = '';
+    try { localStorage.removeItem('gkey'); } catch (e) {}
+    showKeyStatus();
+}
+function apiErrText(status, data) {
+    const m = (data && data.error && data.error.message) || '';
+    if (status === 400 && /API key/i.test(m)) { resetKey(); return 'API Key 无效，请在页面最上面重新填写 Key'; }
+    if (status === 400 && /location/i.test(m)) return '当前网络所在地区不被支持，请换网络/VPN节点';
+    if (status === 403) { resetKey(); return 'Key 没有权限或被停用，请在页面最上面重新填写 Key'; }
+    if (status === 404) return '模型已下线：' + m;
+    if (status === 429) return '额度用完或请求太频繁(429)，稍等再试';
+    if (status >= 500) return '谷歌服务器忙(' + status + ')，稍后重试';
+    return '状态码 ' + status + ' ' + m;
+}
+window.addEventListener('DOMContentLoaded', showKeyStatus);
+const $ = id => document.getElementById(id);
 
-$('chk').onclick=async()=>{
-  $('chk').disabled=true;add('正在检测…','s');
-  const j=await call('models?pageSize=100');
-  if(j){
-    const names=(j.models||[]).filter(m=>(m.supportedGenerationMethods||[]).includes('generateContent')).map(m=>m.name.replace('models/',''));
-    add(`<b>✅ 密钥有效，能连上谷歌。</b><br>你的 Key 可用于聊天的模型有 ${names.length} 个，例如：<br>${esc(names.slice(0,12).join('、'))}<br><small>现在可以直接发消息试试；如果聊天报“模型不存在”，把上面某个名字填进“模型名称”。</small>`,'k',1);
-  }
-  $('chk').disabled=false;
+const ENSEMBLE_VOICES = [
+    { id: 'Aoede', label: '[女·单身小美女老师] Aoede · 甜美知性又会反撩的肖老师', gender: 'F', color: '#ec4899', fx: 12, air: 35, persona: '单身小美女越南语肖老师，声音甜美知性、温柔中带着狡黠机智，既能专业纠音又能一句话拿捏油腻男' },
+    { id: 'Fenrir', label: '[男·天津相声逗哏] Fenrir · 嘴碎爱胡诌谐音的大鹏', gender: 'M', color: '#ef4444', fx: 42, air: 15, persona: '天津外贸业务员大鹏，逗哏体质，嗓门亮、语速快、爱用搞笑谐音显摆越南语' },
+    { id: 'Puck', label: '[男·北京相声捧哏] Puck · 接话拆台快准狠的老刘', gender: 'M', color: '#10b981', fx: 18, air: 20, persona: '北京货代老刘，捧哏体质，语气松弛幽默，专拆大鹏和贾总的台' },
+    { id: 'Despina', label: '[女·脱口秀毒舌嘴替] Despina · 刀刀见血的辛迪', gender: 'F', color: '#f43f5e', fx: 8, air: 32, persona: '前大厂被裁来河内做直播的脱口秀女辛迪，语速利落、冷幽默毒舌，专治油腻与装逼' },
+    { id: 'Sadachbia', label: '[男·假表反派老板] Sadachbia · 爱装大款总翻车的贾总', gender: 'M', color: '#f97316', fx: 35, air: 18, persona: '戴假劳力士、爱吹牛装阔、想追美女肖老师却总被全班下套坑钱的二道贩子贾总' },
+    { id: 'Leda', label: '[女·离异清醒姐姐] Leda · 算账极精的财务苏姐', gender: 'F', color: '#eab308', fx: 22, air: 18, persona: '离异后来河内电子厂当财务主管的苏姐，温柔体面但对数字和算账极其敏锐' },
+    { id: 'Enceladus', label: '[男·00后驻厂刺头] Enceladus · 痞帅护姐狂魔小宇', gender: 'M', color: '#6366f1', fx: 32, air: 28, persona: '被家里发配到越南看仓库的19岁叛逆少年小宇，平时散漫痞气，但谁欺负苏姐他第一个冲上去' },
+    { id: 'Algieba', label: '[男·粤语老江湖] Algieba · 懂汉越词源的广东老K', gender: 'M', color: '#06b6d4', fx: 38, air: 20, persona: '在越南开餐厅十年的广东老江湖老K，擅长用粤语和古汉语词源一秒点透越南语本质' },
+    { id: 'Kore', label: '[女·理性逻辑学霸] Kore · 干练清晰的林知夏', gender: 'F', color: '#a855f7', fx: 12, air: 22, persona: '跨国律所外派翻译林知夏，声音干练清晰，一秒总结发音规律' },
+    { id: 'Autonoe', label: '[女·吃瓜气氛少女] Autonoe · 清脆爱笑的萌萌', gender: 'F', color: '#38bdf8', fx: 0, air: 28, persona: '笑点极低、反应超快的吃瓜女生萌萌' },
+    { id: 'Algenib', label: '[男·慢热老实人] Algenib · 憨厚呆萌的阿呆', gender: 'M', color: '#d97706', fx: 48, air: 20, persona: '老实巴交的驻越工程师阿呆，反射弧长，总在最后关头问出致命问题' },
+    { id: 'Orus', label: '[男·角落冷面杀手] Orus · 一句话封神的冷哥', gender: 'M', color: '#14b8a6', fx: 40, air: 16, persona: '坐后排角落平时不吭声、片尾一句话让全场笑喷的冷哥' }
+];
+
+// 10期「贪吃蛇连环累加 + 高密度4~5词 + 6大笑点轮换」种子库
+const SNOWBALL_SEEDS = [
+    { ep: 'EP01', title: '坑贾总请肖老师吃饭(5词)', wordA: 'đi(去) + ăn(吃) + ăn cơm(吃饭) ➔ đi ăn cơm(去吃饭)', mis: '相声组忽悠贾总对美女肖老师喊『Em bao(我买单)』是夸她漂亮，全班白嫖海鲜', wordB: 'em bao(我请客) + đồ ngốc(傻瓜)', builtinKey: 'ep01_jia_bao' },
+    { ep: 'EP02', title: '粤语秒懂：贾总相亲逃单(5词)', wordA: '复习đi ăn cơm + chuẩn bị(准备-粤语同音) + tính tiền(算钱/买单)', mis: '贾总约会越南妹点龙虾喊『Đắt quá(太贵)』想溜，被老K用粤语汉越词拆穿', wordB: 'đắt quá(太贵了) + cảm ơn(感恩/谢谢)', builtinKey: 'ep02_cantonese_bill' },
+    { ep: 'EP03', title: '刺头小宇护苏姐怼房东(5词)', wordA: 'tiền(钱) + bao nhiêu tiền(多少钱) + không có tiền(没钱)', mis: '黑心二房东欺负离异苏姐不懂越语乱涨租，00后小宇拍桌用越语连环反杀', wordB: 'lừa đảo(骗子) + đi thôi(走吧)', builtinKey: 'ep03_xiaoyu_landlord' },
+    { ep: 'EP04', title: '把河粉Phở念成老婆Vợ(5词)', wordA: 'anh ơi(哥) + chị ơi(姐) + phở bò(牛肉粉)', mis: '大鹏早餐摊把『ăn phở(吃粉-问声)』吼成『ăn vợ(吃老婆-重声)』被老板拎勺追', wordB: 'vợ(老婆) + ngại quá(不好意思)' },
+    { ep: 'EP05', title: '撩肖老师喝咖啡反被拿捏(5词)', wordA: 'uống(喝) + cà phê sữa đá(冰奶咖啡) + đẹp gái(美女)', mis: '贾总想约肖老师喝咖啡秀发音，把『không đường(无糖)』说成『上床』当场社死', wordB: 'nằm mơ(做梦) + nhanh lên(快点)' },
+    { ep: 'EP06', title: '粤语汉越词：北宁考察防坑(5词)', wordA: 'chú ý(注意) + hợp đồng(合同) + thành công(成功)', mis: '老K用粤语一念『注意、合同、成功』全班秒记5个商务大词，辛迪毒舌吐槽贾总假表', wordB: 'an toàn(安全) + cẩn thận(小心)' },
+    { ep: 'EP07', title: '打车Grab被绕路怒怼司机(5词)', wordA: 'ở đâu(在哪里) + rẽ trái(左转) + rẽ phải(右转)', mis: '大鹏老刘坐摩托把『dừng lại(停下)』喊成『快点开』，直接飙到郊区坟地', wordB: 'dừng lại(停下) +救命cứu tôi' },
+    { ep: 'EP08', title: '越南发廊洗头变掏耳惨案(5词)', wordA: 'cắt tóc(剪发) + gội đầu(洗头) + nhẹ一点(轻点)', mis: '阿呆去越式洗头不敢吭声，学会『đau quá(太疼了)』救回一命', wordB: 'đau quá(太疼了) +舒服sướng quá' },
+    { ep: 'EP09', title: '苏姐被越南大叔表白修罗场(5词)', wordA: 'thích(喜欢) + yêu(爱) + kết hôn(结婚-汉越词)', mis: '小宇帮苏姐把关越南追求者，全班用越语审讯对方有多少『tiền lương(工资)』', wordB: 'thật lòng(真心) + xạo(吹牛)' },
+    { ep: 'EP10', title: '全班毕业团建大乱斗(6词大串烧)', wordA: '串联复习：đi ăn cơm + tính tiền + em bao + cảm ơn', mis: '全班用10集学的20个词设连环局，让贾总哭着买完单还得说『Hạnh phúc(幸福)』', wordB: 'một hai ba dô(一二三干杯)' }
+];
+
+// 3部彻底重构的「50秒极简高能 · 每集教会5个词句 · 高级江湖笑点」实装剧本
+const PRESET_DRAMAS = {
+    ep01_jia_bao: {
+        title: '越南语趣味大剧场 EP01：设套坑贾总请美女肖老师“Đi ăn cơm(去吃饭)”（50秒学会5词）',
+        sceneGlobal: '河内培训班教室，单身小美女肖老师刚下课，戴假劳力士的贾总想献殷勤，被相声组（大鹏+老刘）和脱口秀女辛迪联手用5个越南语词下套坑走一顿海鲜',
+        sfxCues: [
+            { sec: 0.0, action: '高跟鞋清脆脚步声 + 肖老师合上讲义声', search: '高跟鞋 翻书声' },
+            { sec: 7.5, action: '贾总显摆拍金表清脆金属声', search: '手表金属声 叮' },
+            { sec: 18.2, action: '相声组击掌暗笑 + 综艺算计音效', search: '综艺坏笑 叮咚' },
+            { sec: 33.5, action: '全班欢呼拍桌子起立挪椅子声', search: '全班欢呼 椅子声' },
+            { sec: 45.0, action: '贾总石化碎裂音效 + 全场爆笑', search: '石化碎裂 哄堂大笑' }
+        ],
+        shots: [
+            { id: 'j1', role: '02·大鹏(天津逗哏)', voice: 'Fenrir', startMs: 0, durMs: 4200, x: -0.25, y: 0.05, posDesc: '中排左逗哏位 (X:-0.25, Y:0.05)', cam: '中景拍大鹏合上书冲老刘挑眉', tone: '天津腔嘴碎显摆', action: '拍着肚皮对老刘吆喝', text: '老刘，刚学那词儿记住了吗？去是 đi，吃是 ăn，米饭是 cơm，合一块儿——咱 đi ăn cơm（去吃饭）！' },
+            { id: 'j2', role: '03·老刘(北京捧哏)', voice: 'Puck', startMs: 4050, durMs: 3800, x: 0.20, y: 0.05, posDesc: '中排右捧哏位 (X:0.20, Y:0.05)', cam: '切老刘斜眼看旁边擦假表的贾总', tone: '京腔捧哏坏笑挤兑', action: '用下巴点点正在照镜子的贾总', text: '噫，光记住 đi ăn cơm 有屁用！关键是谁掏钱请咱美女肖老师 đi ăn cơm 啊？' },
+            { id: 'j3', role: '05·贾总(假表反派)', voice: 'Sadachbia', startMs: 7700, durMs: 4300, x: 0.55, y: -0.25, posDesc: '前排右显摆位 (X:0.55, Y:-0.25)', cam: '特写贾总故意露出大金表凑近讲台', tone: '油腻装阔充大款', action: '甩了甩手腕上的假劳力士', text: '咳！这点小钱算什么？我想单独约肖老师 đi ăn cơm，大鹏，越南语里夸人全班最美怎么说？' },
+            { id: 'j4', role: '02·大鹏(天津逗哏)', voice: 'Fenrir', startMs: 11850, durMs: 4500, x: -0.25, y: 0.05, posDesc: '中排左逗哏位 (X:-0.25, Y:0.05)', cam: '大鹏跟老刘对视一眼憋笑下套，屏幕弹出【Em bao = 我全包/我请客】', tone: '一本正经设套忽悠', action: '凑到贾总耳边握拳示范', text: '贾总，您就拍着胸脯冲肖老师大喊——Đi ăn cơm, em bao！这句 em bao 就是夸她美若天仙！' },
+            { id: 'j5', role: '04·辛迪(脱口秀毒舌)', voice: 'Despina', startMs: 16200, durMs: 4100, x: -0.55, y: -0.25, posDesc: '前排左毒舌位 (X:-0.55, Y:-0.25)', cam: '切辛迪抱臂冷笑补刀', tone: '脱口秀冷幽默拱火', action: '挑眉怂恿贾总', text: '对，声音越大越显贵气，最好让整层楼都听见你喊 Đi ăn cơm, em bao！' },
+            { id: 'j6', role: '05·贾总(假表反派)', voice: 'Sadachbia', startMs: 20150, durMs: 4200, x: 0.55, y: -0.25, posDesc: '前排右显摆位 (X:0.55, Y:-0.25)', cam: '贾总猛地站起来冲讲台上的肖老师深情大吼', tone: '扯着嗓子深情显摆', action: '手扶讲台对着肖老师狂飙越语', text: '肖老师！今晚海鲜大酒楼——Đi ăn cơm, em bao！全班同学听见没？Đi ăn cơm, em bao！' },
+            { id: 'j7', role: '01·肖老师(单身美女老师)', voice: 'Aoede', startMs: 24200, durMs: 4800, x: 0.00, y: -0.80, posDesc: '讲台正中美女主位 (X:0.00, Y:-0.80)', cam: '特写肖老师先是一愣，随即妩媚一笑鼓掌', tone: '甜美惊喜反手拿捏', action: '笑盈盈地敲了下白板写出翻译', text: '哇，贾总今天这么大气呀？同学们，贾总刚说的 Đi ăn cơm 是去吃饭，Em bao 是——我全包、我请客！' },
+            { id: 'j8', role: '07·小宇(00后刺头)', voice: 'Enceladus', startMs: 28800, durMs: 3600, x: -0.65, y: 0.45, posDesc: '后排左苏姐旁 (X:-0.65, Y:0.45)', cam: '小宇一把拎起书包护着苏姐起身起哄', tone: '痞帅起哄绝不客气', action: '拍桌站起来冲门口招手', text: '听见没苏姐！贾总喊 Em bao（我请客）了！不去白不去，全班一块儿 đi ăn cơm！' },
+            { id: 'j9', role: '06·苏姐(离异清醒姐)', voice: 'Leda', startMs: 32250, durMs: 4200, x: -0.35, y: 0.45, posDesc: '后排左财务位 (X:-0.35, Y:0.45)', cam: '切苏姐温柔一笑拿出计算器', tone: '温柔补刀算账极快', action: '温柔地对着脸色发白的贾总点头', text: '那姐可記住了啊：去吃饭是 đi ăn cơm，老板买单是 em bao，咱们十二个人点龙虾，贾总大概得花两千万盾。' },
+            { id: 'j10', role: '05·贾总(假表反派)', voice: 'Sadachbia', startMs: 36300, durMs: 3900, x: 0.55, y: -0.25, posDesc: '前排右显摆位 (X:0.55, Y:-0.25)', cam: '贾总脸绿了捂住钱包急眼大喊', tone: '肉疼破防急眼反悔', action: '抓狂地指着大鹏', text: '什么玩意儿？！Em bao 是我买单？！大鹏你个混蛋坑我！我只请肖老师，没说请你们——' },
+            { id: 'j11', role: '04·辛迪(脱口秀毒舌)', voice: 'Despina', startMs: 40000, durMs: 4100, x: -0.55, y: -0.25, posDesc: '前排左毒舌位 (X:-0.55, Y:-0.25)', cam: '辛迪挽住肖老师胳膊经过贾总身边甩下一句【Đồ ngốc】', tone: '犀利冷笑潇洒补刀', action: '拍拍贾总僵硬的肩膀往外走', text: '话都喊出去了还想赖账？再免费送你一个词——Đồ ngốc（傻瓜）！姐妹们，đi ăn cơm！' },
+            { id: 'j12', role: '12·冷哥(角落观察者)', voice: 'Orus', startMs: 44250, durMs: 4300, x: 0.00, y: 0.75, posDesc: '后排正中角落 (X:0.00, Y:0.75)', cam: '全班涌出教室，冷哥经过贾总身边推眼镜神补刀', tone: '冷面平静一刀毙命', action: '拍了下贾总的假金表', text: '贾总，赶紧走吧……再不 đi ăn cơm，你这表走字儿的声音都快比龙虾响了。' }
+        ]
+    },
+    ep02_cantonese_bill: {
+        title: '越南语趣味大剧场 EP02：粤语汉越词降维打击！贾总相亲逃单“Tính tiền(买单)”（50秒学会5词）',
+        sceneGlobal: '河内培训班教室，承接上集 đi ăn cơm，广东老江湖老K用粤语一秒教会全班汉越词，顺便扒出昨晚贾总跟越南妹约会嫌贵逃单的社死现场',
+        sfxCues: [
+            { sec: 0.0, action: '折扇啪的一声打开 + 冰咖啡放桌声', search: '折扇打开 放杯子' },
+            { sec: 12.0, action: '综艺清脆叮咚音（粤语汉越词对比亮灯）', search: '清脆叮咚 提示音' },
+            { sec: 28.5, action: '辛迪噗嗤冷笑 + 全班拍桌爆笑', search: '女生冷笑 哄堂大笑' },
+            { sec: 43.0, action: '肖老师敲黑板清脆两声收尾', search: '敲黑板 清脆' }
+        ],
+        shots: [
+            { id: 'c1', role: '04·辛迪(脱口秀毒舌)', voice: 'Despina', startMs: 0, durMs: 4300, x: -0.55, y: -0.25, posDesc: '前排左毒舌位 (X:-0.55, Y:-0.25)', cam: '开场直接抓拍辛迪举着手机刷朋友圈', tone: '八卦毒舌开场即爆点', action: '把手机屏幕亮给全班看', text: '号外！昨晚贾总没跟咱们 đi ăn cơm（去吃饭），偷偷约了个越南妹妹吃西餐，结果买单时当场跑路了！' },
+            { id: 'c2', role: '05·贾总(假表反派)', voice: 'Sadachbia', startMs: 4150, durMs: 4200, x: 0.55, y: -0.25, posDesc: '前排右显摆位 (X:0.55, Y:-0.25)', cam: '切贾总拍桌子红脸狡辩', tone: '死要面子大声嘴硬', action: '猛地站起来摆手反驳', text: '胡说八道！我是没做好准备！大鹏，越南语里『准备』怎么说来着？害我背了一晚上没记住——' },
+            { id: 'c3', role: '08·老K(粤语老江湖)', voice: 'Algieba', startMs: 8200, durMs: 4800, x: -0.55, y: 0.55, posDesc: '后排左老江湖位 (X:-0.55, Y:0.55)', cam: '切老K慢悠悠喝茶，屏幕大字弹出【粤语：准备 = 越语：Chuẩn bị】', tone: '粤语大佬松弛降维打击', action: '竖起两根手指用粤语和越语连读对比', text: '死记硬背干嘛？越南语六成是汉越词，跟广东话一模一样！准备，粤语读准备，越南语就是——Chuẩn bị！' },
+            { id: 'c4', role: '02·大鹏(天津逗哏)', voice: 'Fenrir', startMs: 13100, durMs: 4100, x: -0.25, y: 0.05, posDesc: '中排左逗哏位 (X:-0.25, Y:0.05)', cam: '大鹏一拍大腿惊呆跟读', tone: '恍然大悟连环试音', action: '瞪大眼睛冲老K竖大拇指', text: '嚯！Chuẩn bị 就是准备！那谢谢呢？是不是古汉语的『感恩』——Cảm ơn？！' },
+            { id: 'c5', role: '03·老刘(北京捧哏)', voice: 'Puck', startMs: 17050, durMs: 4300, x: 0.20, y: 0.05, posDesc: '中排右捧哏位 (X:0.20, Y:0.05)', cam: '老刘坏笑着转向贾总拆台', tone: '捧哏拆台一针见血', action: '对着贾总拱手调侃', text: '对喽！准备是 chuẩn bị，谢谢是 cảm ơn！那贾总昨晚做好了 chuẩn bị，怎么没听见人家妹妹跟你说声 cảm ơn 啊？' },
+            { id: 'c6', role: '08·老K(粤语老江湖)', voice: 'Algieba', startMs: 21200, durMs: 5000, x: -0.55, y: 0.55, posDesc: '后排左老江湖位 (X:-0.55, Y:0.55)', cam: '老K憋笑揭穿昨晚偶遇贾总的真相', tone: '促狭坏笑还原社死现场', action: '模仿贾总昨晚看账单手抖的样子', text: '因为昨晚那姑娘刚喊了一句服务员买单——Tính tiền！贾总瞄了一眼账单八百万盾，当场惨叫一声——Đắt quá（太贵了）！' },
+            { id: 'c7', role: '06·苏姐(离异清醒姐)', voice: 'Leda', startMs: 26350, durMs: 4200, x: -0.35, y: 0.45, posDesc: '后排左财务位 (X:-0.35, Y:0.45)', cam: '切苏姐笑着帮全班提炼买单砍价黄金二连', tone: '清晰温柔总结干货', action: '指着笔记本带大家复读', text: '这两个词在越南吃饭必用：结账买单叫 tính tiền，嫌太贵了就喊——Đắt quá！' },
+            { id: 'c8', role: '05·贾总(假表反派)', voice: 'Sadachbia', startMs: 30400, durMs: 4000, x: 0.55, y: -0.25, posDesc: '前排右显摆位 (X:0.55, Y:-0.25)', cam: '贾总恼羞成怒拍桌辩解', tone: '急眼狡辩越描越黑', action: '红着脖子冲全班嚷嚷', text: '两只螃蟹要八百万盾，本来就 đắt quá（太贵了）！我那不是逃单，我是出门去取钱准备 tính tiền——' },
+            { id: 'c9', role: '01·肖老师(单身美女老师)', voice: 'Aoede', startMs: 34250, durMs: 5200, x: 0.00, y: -0.80, posDesc: '讲台正中美女主位 (X:0.00, Y:-0.80)', cam: '肖老师走下讲台微笑纠音并反将一军', tone: '甜美标准示范+温柔补刀', action: '在白板上把5个词连成一句话', text: '发音很准哦贾总！跟老师连起来复习一遍：先做好准备 chuẩn bị，再去吃饭 đi ăn cơm，嫌太贵喊 đắt quá，最后买单 tính tiền，说声谢谢 cảm ơn！' },
+            { id: 'c10', role: '11·阿呆(慢热老实人)', voice: 'Algenib', startMs: 39600, durMs: 4500, x: 0.78, y: 0.15, posDesc: '中排最右靠窗 (X:0.78, Y:0.15)', cam: '阿呆挠着头慢半拍追问贾总', tone: '憨厚补刀致命一问', action: '一脸真诚地举手问贾总', text: '那个……贾总，你昨晚八点出门取钱准备 tính tiền，怎么取到今天早上还没回去结账啊？' }
+        ]
+    },
+    ep03_xiaoyu_landlord: {
+        title: '越南语趣味大剧场 EP03：00后小宇护苏姐！怒怼黑心房东“Lừa đảo(骗子)”（50秒学会5词）',
+        sceneGlobal: '河内培训班教室，离异来闯荡的苏姐被越南二房东乱扣押金，平时吊儿郎当的19岁刺头小宇联合全班教她用5个霸气越南语词当场反杀',
+        sfxCues: [
+            { sec: 0.0, action: '手机微信语音急促提示音 + 苏姐叹气声', search: '微信提示音 叹气' },
+            { sec: 8.2, action: '小宇猛拍桌子站起来的震动声', search: '拍桌子 猛烈' },
+            { sec: 24.5, action: '电话免提接通嘟声 + 全班安静屏息', search: '电话接通 嘟声' },
+            { sec: 41.0, action: '全班帅气击掌欢呼声', search: '欢呼 击掌' }
+        ],
+        shots: [
+            { id: 'x1', role: '06·苏姐(离异清醒姐)', voice: 'Leda', startMs: 0, durMs: 4400, x: -0.35, y: 0.45, posDesc: '后排左财务位 (X:-0.35, Y:0.45)', cam: '特写苏姐看着手机账单发愁叹气', tone: '无奈委屈焦急求助', action: '把手机电费单递给旁边的小宇看', text: '小宇，姐刚搬家就被二房东坑了……他发语音追着我要钱，可我只会听一个钱字叫 tiền，怎么问他到底多少钱啊？' },
+            { id: 'x2', role: '07·小宇(00后刺头)', voice: 'Enceladus', startMs: 4250, durMs: 4300, x: -0.65, y: 0.45, posDesc: '后排左苏姐旁 (X:-0.65, Y:0.45)', cam: '小宇一把拿过手机眉头紧锁拍桌站起', tone: '痞帅霸气护姐狂魔', action: '把外套往肩上一甩冷笑一声', text: '敢欺负苏姐不会越语？钱是 tiền，问多少钱就是——Bao nhiêu tiền！我倒要看看他敢讹你 bao nhiêu tiền！' },
+            { id: 'x3', role: '09·林知夏(理性学霸)', voice: 'Kore', startMs: 8400, durMs: 4200, x: -0.35, y: 0.10, posDesc: '中排左学霸位 (X:-0.35, Y:0.10)', cam: '林知夏推眼镜看账单直接抓出破绽', tone: '干练冷静精准拆解', action: '指着账单上的电费数字', text: '一度电收你一万盾？这是纯纯的敲诈！苏姐，一会儿直接回他三个字——Không có tiền（没钱、不给）！' },
+            { id: 'x4', role: '02·大鹏(天津逗哏)', voice: 'Fenrir', startMs: 12450, durMs: 4000, x: -0.25, y: 0.05, posDesc: '中排左逗哏位 (X:-0.25, Y:0.05)', cam: '大鹏撸起袖子凑过来帮腔', tone: '义愤填膺教骂人词', action: '用力挥拳示范重音', text: '光说 không có tiền（没钱）不够解气！得指着他鼻子骂他骗子——Lừa đảo！跟我念，Lừa đảo！' },
+            { id: 'x5', role: '01·肖老师(单身美女老师)', voice: 'Aoede', startMs: 16300, durMs: 4800, x: 0.00, y: -0.80, posDesc: '讲台正中美女主位 (X:0.00, Y:-0.80)', cam: '肖老师快步走过来帮苏姐按下免提回拨', tone: '飒爽护短现场教学', action: '把四个词写在手心举在苏姐面前', text: '欺负咱们中国女生可不行！苏姐，电话通了，看着老师手心，把这四句连起来怼回去！' },
+            { id: 'x6', role: '06·苏姐(离异清醒姐)', voice: 'Leda', startMs: 21250, durMs: 5200, x: -0.35, y: 0.45, posDesc: '后排左财务位 (X:-0.35, Y:0.45)', cam: '特写苏姐眼神变得坚定霸气，对着免提麦克风字字铿锵输出', tone: '从温柔变女王气场全开', action: '挺直腰板对着电话流利反击', text: '喂房东！电费到底多少钱——Bao nhiêu tiền？！乱收费我一分都不给——Không có tiền！你这是诈骗——Lừa đảo！报警见！' },
+            { id: 'x7', role: '07·小宇(00后刺头)', voice: 'Enceladus', startMs: 26300, durMs: 3900, x: -0.65, y: 0.45, posDesc: '后排左苏姐旁 (X:-0.65, Y:0.45)', cam: '小宇凑近手机补上最后一击直接挂断', tone: '嚣张痛快一锤定音', action: '对着话筒冷哼一声按掉电话', text: '听见没？再敢扣押金，我现在就带人 đi（去）找你！苏姐，咱下课搬家——Đi thôi（走吧）！' },
+            { id: 'x8', role: '04·辛迪(脱口秀毒舌)', voice: 'Despina', startMs: 30350, durMs: 4300, x: -0.55, y: -0.25, posDesc: '前排左毒舌位 (X:-0.55, Y:-0.25)', cam: '全班鼓掌叫好，辛迪斜眼看向缩在角落的贾总', tone: '毒舌转弯顺手刺贾总', action: '笑着指向贾总', text: '哇，小宇这声 lừa đảo（骗子）吼得太地道了！贾总你怎么吓得一哆嗦？以为在叫你呢？' },
+            { id: 'x9', role: '05·贾总(假表反派)', voice: 'Sadachbia', startMs: 34500, durMs: 4100, x: 0.55, y: -0.25, posDesc: '前排右显摆位 (X:0.55, Y:-0.25)', cam: '贾总慌忙擦汗现学现卖甩出【Không có tiền】', tone: '心虚认怂活学活用', action: '死死捂住裤兜往门外溜', text: '谁是 lừa đảo？！我就是提前跟你们声明一下，今晚谁也别找我吃饭啊，我今天——Không có tiền（没钱）！Đi thôi（走吧）！' }
+        ]
+    }
 };
 
-async function send(){
-  const t=$('msg').value.trim();if(!t)return;
-  $('msg').value='';add(t,'u');hist.push({role:'user',parts:[{text:t}]});
-  $('send').disabled=true;const w=add('思考中…','a');
-  const j=await call('models/'+encodeURIComponent($('model').value.trim())+':generateContent',{method:'POST',body:JSON.stringify({contents:hist})});
-  w.remove();
-  if(j){
-    const c=(j.candidates||[])[0];
-    const txt=c&&c.content&&c.content.parts?c.content.parts.map(p=>p.text||'').join(''):'';
-    if(txt){add(txt,'a');hist.push({role:'model',parts:[{text:txt}]})}
-    else{hist.pop();const why=(j.promptFeedback&&j.promptFeedback.blockReason)?'内容被安全策略拦截（'+j.promptFeedback.blockReason+'）':'接口通了，但没有返回文字（结束原因：'+((c&&c.finishReason)||'未知')+'）';
-      add(`<b>⚠️ ${esc(why)}</b><br><small>换一句话再试。</small>`,'e',1)}
-  }else hist.pop();
-  $('send').disabled=false;
+let currentDrama = JSON.parse(JSON.stringify(PRESET_DRAMAS.ep01_jia_bao));
+let activeShotId = currentDrama.shots[0].id;
+let mixedMasterBuffer = null;
+let mixedMasterMp3Url = null;
+let mixedMasterBlob = null;
+let previewCtx = null;
+let isPlaying = false;
+let animFrameId = null;
+const ttsAudioCache = new Map();
+const shotStatusMap = new Map();
+const PX_PER_SEC = 44;
+
+function showMsg(txt) {
+    const b = $('topNotice');
+    if (!b) return;
+    b.textContent = txt;
+    b.classList.remove('hidden');
+    clearTimeout(window._ntTimer);
+    window._ntTimer = setTimeout(() => b.classList.add('hidden'), 6500);
 }
-$('send').onclick=send;
-$('msg').addEventListener('keydown',e=>{if(e.key==='Enter')send()});
+
+function formatMsToTimecode(ms) {
+    const totalMs = Math.max(0, Math.round(ms));
+    const m = Math.floor(totalMs / 60000);
+    const s = Math.floor((totalMs % 60000) / 1000);
+    const remMs = totalMs % 1000;
+    return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}.${String(remMs).padStart(3, '0')}`;
+}
+
+// 渲染 10 期连载种子矩阵
+function renderSeedCurriculum() {
+    const box = $('seedCurriculumGrid');
+    if (!box) return;
+    box.innerHTML = SNOWBALL_SEEDS.map((sd, i) => `
+        <div class="seed-pill ${i === 0 ? 'on' : ''}" onclick="selectSeedTopic(${i}, this)">
+            <div class="font-extrabold text-amber-400">${sd.ep} · ${sd.title}</div>
+            <div class="text-[10px] text-slate-400 truncate mt-0.5">A:${sd.wordA} | B:${sd.wordB}</div>
+        </div>
+    `).join('');
+}
+
+function selectSeedTopic(idx, el) {
+    document.querySelectorAll('.seed-pill').forEach(p => p.classList.remove('on'));
+    if (el) el.classList.add('on');
+    const sd = SNOWBALL_SEEDS[idx];
+    if (!sd) return;
+    $('seedWordA').value = sd.wordA;
+    $('seedMisunderstand').value = sd.mis;
+    $('seedWordB').value = sd.wordB;
+    if (sd.builtinKey && PRESET_DRAMAS[sd.builtinKey]) {
+        loadPresetDrama(sd.builtinKey);
+    } else {
+        showMsg(`🎯 已选中《${sd.ep}：${sd.title}》配方！点击右侧粉色按钮「✨ 生成50秒高密度新集」即可按四大铁律自动写出全集！`);
+    }
+}
+
+function openJsonImportModal() {
+    $('jsonImportTextarea').value = JSON.stringify(currentDrama, null, 2);
+    $('jsonImportModal').style.display = 'flex';
+}
+
+function applyImportedJsonDrama() {
+    try {
+        const raw = $('jsonImportTextarea').value.trim();
+        const parsed = JSON.parse(raw.replace(/^```json\s*/i, '').replace(/```$/i, '').trim());
+        if (!parsed || !Array.isArray(parsed.shots)) throw new Error('JSON 缺少 shots 数组');
+        currentDrama = parsed;
+        activeShotId = currentDrama.shots[0].id;
+        mixedMasterBuffer = null;
+        shotStatusMap.clear();
+        $('jsonImportModal').style.display = 'none';
+        $('dramaTitleText').textContent = `🎬 当前工程：《${currentDrama.title}》`;
+        renderAll();
+        showMsg(`✅ 已免改代码直接载入《${currentDrama.title}》！`);
+    } catch (e) {
+        showMsg(`❌ JSON 格式有误：${e.message}`);
+    }
+}
+
+// 核心功能：AI 严格按照「50秒极简高能 + 每集教会4~5个连环词 + 成人江湖四棒接力」生成新剧集
+async function generateSnowballEpisodeByAI() {
+    const wordA = $('seedWordA').value.trim() || 'đi(去) + ăn cơm(吃饭)';
+    const mis = $('seedMisunderstand').value.trim() || '整蛊反派贾总';
+    const wordB = $('seedWordB').value.trim() || 'em bao(我请客) + đồ ngốc(傻瓜)';
+    const btn = $('aiGenEpisodeBtn');
+    const oldTxt = btn.textContent;
+    btn.disabled = true;
+    btn.textContent = '⏳ 正在生成50秒高能剧...';
+    showMsg(`🧠 正在按「零废话50秒 + 教会5个连环词 + 四棒接力笑点」生成新剧集...`);
+
+    const sysPrompt = `你是《越南语趣味大剧场 1.0》的总编剧。请彻底杜绝啰嗦废话、杜绝低龄幼稚笑点！
+常驻角色库（按需挑6~8人出场）：
+- 01·肖老师(单身美女老师,voice:Aoede,x:0.0,y:-0.80)
+- 02·大鹏(天津逗哏,voice:Fenrir,x:-0.25,y:0.05)
+- 03·老刘(北京捧哏,voice:Puck,x:0.20,y:0.05)
+- 04·辛迪(脱口秀毒舌,voice:Despina,x:-0.55,y:-0.25)
+- 05·贾总(假表反派老板,voice:Sadachbia,x:0.55,y:-0.25)
+- 06·苏姐(离异清醒财务姐,voice:Leda,x:-0.35,y:0.45)
+- 07·小宇(00后护姐刺头,voice:Enceladus,x:-0.65,y:0.45)
+- 08·老K(粤语老江湖,voice:Algieba,x:-0.55,y:0.55)
+- 11·阿呆(慢热老实人,voice:Algenib,x:0.78,y:0.15)
+- 12·冷哥(角落神补刀,voice:Orus,x:0.0,y:0.75)
+
+【四大死规矩】：
+1. 极简短平快：全剧严格控制在 9~11 句台词（总时长约45~50秒），每句台词不超过25个字，开场第1秒直接进冲突，零寒暄！
+2. 越南语干货高密度：本集必须通过“贪吃蛇连环累加/粤语汉越词对比”扎实教会至少 4~5 个核心词句：【${wordA}】与【${wordB}】，并在不同角色嘴里自然复读10次以上！
+3. 高级成人笑点（四棒接力）：围绕【${mis}】展开——第1棒吹牛显摆/设局 ➔ 第2棒捧哏拆穿 ➔ 第3棒脱口秀毒舌补刀 ➔ 第4棒美女肖老师或冷哥神反转！
+
+严格输出如下JSON格式（不要代码块标记）：
+{
+  "title": "越南语趣味大剧场：...",
+  "sceneGlobal": "河内培训班教室...",
+  "sfxCues": [{"sec":0.0,"action":"...","search":"..."}],
+  "shots": [
+    {"id":"s1","role":"02·大鹏(天津逗哏)","voice":"Fenrir","startMs":0,"durMs":4200,"x":-0.25,"y":0.05,"posDesc":"中排左","cam":"中景特写","tone":"嘴碎显摆","action":"拍桌子","text":"台词内容"}
+  ]
+}`;
+
+    try {
+        ensureKey();
+        const textModels = ['gemini-flash-latest', 'gemini-flash-lite-latest', 'gemini-3-flash-preview'];
+        let data = null, lastTextErr = '';
+        for (const m of textModels) {
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/${m}:generateContent?key=${apiKey}`;
+            const res = await fetchWithTimeout(url, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    contents: [{ parts: [{ text: sysPrompt }] }],
+                    generationConfig: { responseMimeType: 'application/json' }
+                })
+            }, 25000);
+            const d = await res.json();
+            if (res.ok) { data = d; break; }
+            lastTextErr = apiErrText(res.status, d);
+            if (res.status === 400 || res.status === 403) break;
+        }
+        if (!data) throw new Error(lastTextErr || '模型暂时不可用');
+        const rawJson = data?.candidates?.[0]?.content?.parts?.[0]?.text || '';
+        const parsed = JSON.parse(rawJson.replace(/^```json\s*/i, '').replace(/```$/i, '').trim());
+        if (parsed && Array.isArray(parsed.shots) && parsed.shots.length > 0) {
+            currentDrama = parsed;
+            activeShotId = currentDrama.shots[0].id;
+            mixedMasterBuffer = null;
+            shotStatusMap.clear();
+            recalcMillisecondTimeline();
+            $('dramaTitleText').textContent = `🎬 当前工程：《${currentDrama.title}》`;
+            showMsg(`🎉 新剧集《${currentDrama.title}》生成完毕！全剧已自动排好时间轴与打点单，直接点「🚀 一键合成全集配音」即可！`);
+        } else {
+            throw new Error('返回格式不完整');
+        }
+    } catch (e) {
+        showMsg(`⚠️ AI 实时裂变遇到网络波动 (${e.message})，请再点一次按钮即可！`);
+    } finally {
+        btn.disabled = false;
+        btn.textContent = oldTxt;
+    }
+}
+
+function loadPresetDrama(key) {
+    stopTimelinePreview();
+    currentDrama = JSON.parse(JSON.stringify(PRESET_DRAMAS[key] || PRESET_DRAMAS.vnSnowballDi));
+    activeShotId = currentDrama.shots[0].id;
+    mixedMasterBuffer = null;
+    shotStatusMap.clear();
+    $('dramaTitleText').textContent = `🎬 当前工程：《${currentDrama.title}》（共 ${new Set(currentDrama.shots.map(s=>s.role)).size} 人同场）`;
+    renderAll();
+    showMsg(`✅ 已载入《${currentDrama.title}》！可直接点上方「🚀 一键合成全集配音」或单句「▶ 试听本句」！`);
+}
+
+function renderAll() {
+    renderRoleVoiceSwitcher();
+    renderSfxCueList();
+    renderTimeline();
+    renderShotSheet();
+    drawSpatialRadar(0);
+}
+
+function renderRoleVoiceSwitcher() {
+    const box = $('roleVoiceSwitcherGrid');
+    if (!box) return;
+    const uniqueRoles = [...new Set(currentDrama.shots.map(s => s.role))];
+    box.innerHTML = uniqueRoles.map(roleName => {
+        const firstShot = currentDrama.shots.find(s => s.role === roleName);
+        const curVoice = firstShot ? firstShot.voice : 'Orus';
+        const vInfo = ENSEMBLE_VOICES.find(v => v.id === curVoice) || ENSEMBLE_VOICES[0];
+        return `
+        <div class="bg-[#090b10] border border-white/10 rounded-xl p-2 flex flex-col gap-1.5" style="border-left:3px solid ${vInfo.color}">
+            <div class="flex items-center justify-between gap-1">
+                <span class="font-bold text-xs text-amber-300 truncate">${roleName}</span>
+                <button type="button" onclick="auditionRoleFirstLine('${roleName}')" class="btn btn-blue py-0.5 px-2 text-[10px]">🔊 试听声音</button>
+                <button type="button" onclick="changeRoleVoiceNext('${roleName}')" class="btn btn-gold py-0.5 px-2 text-[10px]">🔄 更换声音</button>
+            </div>
+            <select onchange="changeRoleVoiceGlobal('${roleName}', this.value)" class="text-[11px] py-1 px-2">
+                ${ENSEMBLE_VOICES.map(v => `<option value="${v.id}" ${v.id === curVoice ? 'selected' : ''}>${v.label}</option>`).join('')}
+            </select>
+        </div>`;
+    }).join('');
+}
+
+function changeRoleVoiceGlobal(roleName, newVoiceId) {
+    currentDrama.shots.forEach(s => {
+        if (s.role === roleName) {
+            s.voice = newVoiceId;
+            delete s.pcm;
+            shotStatusMap.set(s.id, { state: 'wait', msg: '已换音色·待录' });
+        }
+    });
+    renderAll();
+    auditionRoleFirstLine(roleName);
+}
+
+function changeRoleVoiceNext(roleName) {
+    const first = currentDrama.shots.find(s => s.role === roleName);
+    if (!first) return;
+    const cur = ENSEMBLE_VOICES.find(v => v.id === first.voice) || ENSEMBLE_VOICES[0];
+    const used = new Set(currentDrama.shots.filter(s => s.role !== roleName).map(s => s.voice));
+    const same = ENSEMBLE_VOICES.filter(v => v.gender === cur.gender);
+    const pool = same.length > 1 ? same : ENSEMBLE_VOICES;
+    const idx = Math.max(0, pool.findIndex(v => v.id === cur.id));
+    let next = null;
+    for (let k = 1; k <= pool.length; k++) {
+        const v = pool[(idx + k) % pool.length];
+        if (!used.has(v.id)) { next = v; break; }
+    }
+    if (!next) next = pool[(idx + 1) % pool.length];
+    changeRoleVoiceGlobal(roleName, next.id);
+}
+
+async function auditionRoleFirstLine(roleName) {
+    const shot = currentDrama.shots.find(s => s.role === roleName);
+    if (!shot) return;
+    await auditionShotById(shot.id, true);
+}
+
+function renderSfxCueList() {
+    const box = $('sfxCueListBox');
+    if (!box) return;
+    const cues = currentDrama.sfxCues || [];
+    box.innerHTML = cues.map((c, idx) => `
+        <div class="sfx-pill">
+            <div class="flex items-center gap-2 min-w-0">
+                <span class="ms-badge">⏱️ 第 ${Number(c.sec).toFixed(1)}s</span>
+                <span class="text-white font-bold truncate" title="${c.action}">${c.action}</span>
+            </div>
+            <div class="flex items-center gap-1.5 shrink-0">
+                <span class="text-[10px] font-mono bg-black/60 text-emerald-300 px-2 py-0.5 rounded border border-emerald-500/30">🔎 剪映搜: ${c.search}</span>
+                <button type="button" onclick="removeSfxCue(${idx})" class="text-rose-400 hover:text-rose-300 text-xs px-1 cursor-pointer">×</button>
+            </div>
+        </div>
+    `).join('');
+}
+
+function addSfxCueInteractive() {
+    const secStr = prompt('请输入需要打点的秒数（如 1.0 或 3.2）：', '3.2');
+    if (secStr === null) return;
+    const action = prompt('请输入该秒数的动作或音效名称（如：拍桌子、摔杯子、哄堂大笑）：', '全班哄堂大笑拍桌子');
+    if (!action) return;
+    const search = prompt('请输入在剪映里搜索的关键词：', action);
+    if (!currentDrama.sfxCues) currentDrama.sfxCues = [];
+    currentDrama.sfxCues.push({ sec: parseFloat(secStr) || 0, action, search: search || action });
+    currentDrama.sfxCues.sort((a, b) => a.sec - b.sec);
+    renderSfxCueList();
+}
+
+function removeSfxCue(idx) {
+    currentDrama.sfxCues.splice(idx, 1);
+    renderSfxCueList();
+}
+
+function addSfxCueInteractive() {
+    if (!currentDrama.sfxCues) currentDrama.sfxCues = [];
+    const lastSec = currentDrama.sfxCues.length ? currentDrama.sfxCues[currentDrama.sfxCues.length - 1].sec : 0;
+    currentDrama.sfxCues.push({
+        sec: +(lastSec + 3.5).toFixed(1),
+        action: '新增动作/拍桌子哄堂大笑',
+        search: '拍桌子 哄堂大笑'
+    });
+    renderSfxCueList();
+    showMsg('✅ 已新增一条秒级音效打点！');
+}
+
+function buildSfxCueSheetText() {
+    const lines = [];
+    lines.push(`# 🔔 《${currentDrama.title}》后期配音与剪映真音效秒级打点清单`);
+    lines.push(`> 说明：音频母带已保持 100% 纯净人声，请按以下精确秒数在剪映中添加真实音效：\n`);
+    (currentDrama.sfxCues || []).forEach((c, i) => {
+        const ms = Math.round(c.sec * 1000);
+        lines.push(`${i + 1}. 【第 ${Number(c.sec).toFixed(1)} 秒 (${formatMsToTimecode(ms)})】 ➔ 动作/音效：${c.action}  |  🔎 剪映搜索词：「${c.search}」`);
+    });
+    lines.push(`\n---`);
+    lines.push(`## 附：全剧逐句语音时间点对照（精确到毫秒）`);
+    currentDrama.shots.forEach((s) => {
+        const startS = (s.startMs / 1000).toFixed(2);
+        const endS = ((s.startMs + (s.durMs || 3000)) / 1000).toFixed(2);
+        lines.push(`- [第 ${startS}s ~ ${endS}s] ${s.role}（${s.tone}）：「${s.text}」`);
+    });
+    return lines.join('\n');
+}
+
+function copySfxCueSheet() {
+    copyTextToClipboard(buildSfxCueSheetText());
+    showMsg('📋 已复制完整《秒级音效打点清单》！');
+}
+
+function downloadSfxCueSheet() {
+    const txt = buildSfxCueSheetText();
+    const blob = new Blob([txt], { type: 'text/plain;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    window._lastExportText = txt;
+    window._lastExportName = `${currentDrama.title}_秒级音效打点清单.txt`;
+    $('expTitle').textContent = `🔔 《${window._lastExportName}》已生成`;
+    $('expSub').textContent = `清晰列出第几秒拍桌子、第几秒哄堂大笑，方便后期直接贴真音效`;
+    $('expDlBtn').href = url;
+    $('expDlBtn').download = window._lastExportName;
+    $('expCopyBtn').classList.remove('hidden');
+    $('expMediaBox').innerHTML = `<textarea readonly rows="12" class="w-full text-[11px] font-mono bg-black text-emerald-300 p-2 rounded border-0">${txt}</textarea>`;
+    $('exportModal').style.display = 'flex';
+}
+
+function recalcMillisecondTimeline() {
+    const overlap = $('autoOverlapChk').checked;
+    let cursorMs = 0;
+    currentDrama.shots.forEach((s, idx) => {
+        if (idx === 0) {
+            s.startMs = 0;
+        } else {
+            const prev = currentDrama.shots[idx - 1];
+            const isInterrupt = /——|--/.test(prev.text) || /抢话|打断|起哄|抢答/.test(s.tone);
+            const gapMs = overlap ? (isInterrupt ? -280 : 140) : 240;
+            s.startMs = Math.max(0, Math.round(cursorMs + gapMs));
+        }
+        cursorMs = s.startMs + (s.durMs || 4800);
+    });
+    renderAll();
+}
+
+function renderTimeline() {
+    const shots = currentDrama.shots;
+    const maxEndMs = Math.max(20000, ...shots.map(s => s.startMs + (s.durMs || 4000))) + 2000;
+    const maxSec = Math.ceil(maxEndMs / 1000);
+    const totalW = maxSec * PX_PER_SEC;
+
+    let rHtml = `<div style="margin-left:142px;position:relative;height:100%;width:${totalW}px">`;
+    for (let sec = 0; sec <= maxSec; sec += 2) {
+        rHtml += `<span style="position:absolute;left:${sec * PX_PER_SEC}px;top:4px;border-left:1px solid #374151;padding-left:3px">${sec}.0s</span>`;
+    }
+    rHtml += `</div>`;
+    $('tlRuler').innerHTML = rHtml;
+
+    const uniqueRoles = [...new Set(shots.map(s => s.role))];
+    let tracksHtml = `<div id="playhead" class="playhead" style="left:142px"></div>`;
+
+    uniqueRoles.forEach((roleName, rIdx) => {
+        const roleShots = shots.filter(s => s.role === roleName);
+        const firstShot = roleShots[0];
+        const vInfo = ENSEMBLE_VOICES.find(v => v.id === firstShot.voice) || ENSEMBLE_VOICES[rIdx % ENSEMBLE_VOICES.length];
+
+        tracksHtml += `
+        <div class="tl-row">
+            <div class="tl-head" style="border-left:3px solid ${vInfo.color}">
+                <div class="font-bold text-[11px] text-white truncate">${roleName}</div>
+                <div class="text-[9px] text-emerald-400 truncate font-mono">${vInfo.id} | X:${firstShot.x}</div>
+            </div>
+            <div class="tl-lane" style="width:${totalW}px">
+                ${roleShots.map(s => {
+                    const leftPx = Math.round((s.startMs / 1000) * PX_PER_SEC);
+                    const widthPx = Math.max(58, Math.round(((s.durMs || 4000) / 1000) * PX_PER_SEC));
+                    const isAct = s.id === activeShotId;
+                    return `
+                    <div class="tl-clip ${isAct ? 'active' : ''}"
+                         style="left:${leftPx}px;width:${widthPx}px;background:${vInfo.color}cc;border:1px solid ${vInfo.color}"
+                         onpointerdown="startDragShot(event, '${s.id}')">
+                        <div class="flex justify-between items-center text-[9px] font-mono text-white/95">
+                            <span>${(s.startMs/1000).toFixed(1)}s</span>
+                            <span>${s.pcm ? '✅' : ''}</span>
+                        </div>
+                        <div class="text-[10px] text-white font-bold truncate">${s.text}</div>
+                    </div>`;
+                }).join('')}
+            </div>
+        </div>`;
+    });
+
+    $('tlTracksBox').innerHTML = tracksHtml;
+}
+
+function startDragShot(ev, shotId) {
+    const shot = currentDrama.shots.find(s => s.id === shotId);
+    if (!shot) return;
+    activeShotId = shotId;
+    const el = ev.currentTarget;
+    document.querySelectorAll('.tl-clip').forEach(n => n.classList.remove('active'));
+    el.classList.add('active');
+
+    const startX = ev.clientX;
+    const origMs = shot.startMs;
+
+    const onMove = mv => {
+        const dx = mv.clientX - startX;
+        const deltaMs = Math.round((dx / PX_PER_SEC) * 1000);
+        shot.startMs = Math.max(0, origMs + deltaMs);
+        el.style.left = `${Math.round((shot.startMs / 1000) * PX_PER_SEC)}px`;
+        drawSpatialRadar(shot.startMs + 100);
+    };
+    const onUp = () => {
+        window.removeEventListener('pointermove', onMove);
+        window.removeEventListener('pointerup', onUp);
+        currentDrama.shots.sort((a, b) => a.startMs - b.startMs);
+        renderAll();
+        if (mixedMasterBuffer) rebuildMasterMixOnly();
+    };
+    window.addEventListener('pointermove', onMove);
+    window.addEventListener('pointerup', onUp);
+}
+
+function drawSpatialRadar(currentMs = 0) {
+    return; // 雷达面板已删除
+    const canvas = $('spatialRadarCanvas');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    const w = canvas.width, h = canvas.height;
+    const cx = w / 2, cy = h / 2;
+
+    $('liveMsClock').textContent = `${formatMsToTimecode(currentMs)} (${(currentMs/1000).toFixed(1)}s)`;
+
+    ctx.fillStyle = '#06080e';
+    ctx.fillRect(0, 0, w, h);
+
+    ctx.fillStyle = 'rgba(245, 177, 61, 0.14)';
+    ctx.strokeStyle = 'rgba(245, 177, 61, 0.55)';
+    ctx.lineWidth = 2;
+    ctx.fillRect(cx - 105, 18, 210, 34);
+    ctx.strokeRect(cx - 105, 18, 210, 34);
+    ctx.fillStyle = '#fde047';
+    ctx.font = 'bold 11px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('📋 教室白板 (đi = 去 | đồ ngốc = 傻瓜)', cx, 39);
+
+    ctx.strokeStyle = 'rgba(56, 189, 248, 0.18)';
+    ctx.lineWidth = 10;
+    ctx.beginPath();
+    ctx.arc(cx, cy + 15, 125, 0.15 * Math.PI, 0.85 * Math.PI, false);
+    ctx.stroke();
+
+    const activeShots = currentDrama.shots.filter(s => currentMs >= s.startMs && currentMs <= s.startMs + (s.durMs || 4000));
+    const currentFocus = activeShots[activeShots.length - 1] || currentDrama.shots.find(s => s.id === activeShotId) || currentDrama.shots[0];
+
+    const roleMap = new Map();
+    currentDrama.shots.forEach((s, idx) => {
+        if (!roleMap.has(s.role)) roleMap.set(s.role, { shot: s, idx: idx + 1 });
+    });
+
+    if (currentFocus) {
+        const tx = cx + currentFocus.x * 165;
+        const ty = cy + currentFocus.y * 165;
+        ctx.strokeStyle = '#ec4899';
+        ctx.lineWidth = 2;
+        ctx.setLineDash([4, 4]);
+        ctx.beginPath();
+        ctx.moveTo(cx, cy);
+        ctx.lineTo(tx, ty);
+        ctx.stroke();
+        ctx.setLineDash([]);
+    }
+
+    roleMap.forEach(({ shot }, rName) => {
+        const px = cx + shot.x * 165;
+        const py = cy + shot.y * 165;
+        const isSpeakingNow = activeShots.some(as => as.role === rName);
+        const vInfo = ENSEMBLE_VOICES.find(v => v.id === shot.voice) || ENSEMBLE_VOICES[0];
+
+        if (isSpeakingNow) {
+            ctx.beginPath();
+            ctx.arc(px, py, 25, 0, Math.PI * 2);
+            ctx.fillStyle = 'rgba(239, 68, 68, 0.34)';
+            ctx.fill();
+        }
+
+        ctx.beginPath();
+        ctx.arc(px, py, isSpeakingNow ? 15 : 11, 0, Math.PI * 2);
+        ctx.fillStyle = isSpeakingNow ? '#ef4444' : vInfo.color;
+        ctx.fill();
+        ctx.lineWidth = isSpeakingNow ? 3 : 1.5;
+        ctx.strokeStyle = '#ffffff';
+        ctx.stroke();
+
+        ctx.fillStyle = isSpeakingNow ? '#fde047' : '#e5e7eb';
+        ctx.font = `${isSpeakingNow ? 'bold ' : ''}10px "Noto Sans SC", sans-serif`;
+        ctx.fillText(rName.split('(')[0], px, py - 15);
+    });
+
+    if (currentFocus) {
+        $('liveSpatialDesc').innerHTML = `
+            <div>⏱️ <b>时间码</b>：<code>${formatMsToTimecode(currentFocus.startMs)} - ${formatMsToTimecode(currentFocus.startMs + currentFocus.durMs)}</code></div>
+            <div>📍 <b>座位坐标</b>：<span class="text-amber-300 font-bold">${currentFocus.role}</span> <code>(X:${currentFocus.x.toFixed(2)}, Y:${currentFocus.y.toFixed(2)})</code></div>
+            <div>🎭 <b>神态动作</b>：<span class="text-emerald-300">${currentFocus.action} (${currentFocus.tone})</span></div>
+            <div class="text-white mt-0.5">💬 <b>台词</b>：“${currentFocus.text}”</div>
+        `;
+    }
+}
+
+function buildExternalAiVisualPrompt(shot, idx) {
+    const startTc = formatMsToTimecode(shot.startMs);
+    const endTc = formatMsToTimecode(shot.startMs + (shot.durMs || 4000));
+    return `[Shot #${idx + 1} | ${startTc} - ${endTc} (${shot.startMs}ms - ${shot.startMs + (shot.durMs || 4000)}ms)] ` +
+           `Setting: ${currentDrama.sceneGlobal}. ` +
+           `Camera: ${shot.cam}. ` +
+           `Speaker: "${shot.role}" at coordinate (X:${shot.x.toFixed(2)}, Y:${shot.y.toFixed(2)} — ${shot.posDesc}), ` +
+           `Action: ${shot.action} (Emotion: ${shot.tone}), Lip-sync dialogue: "${shot.text}".`;
+}
+
+function renderShotSheet() {
+    const box = $('shotSheetContainer');
+    if (!box) return;
+    if ($('shotTotalCount')) $('shotTotalCount').textContent = currentDrama.shots.length;
+
+    box.innerHTML = currentDrama.shots.map((s, idx) => {
+        const endMs = s.startMs + (s.durMs || 4000);
+        const stObj = shotStatusMap.get(s.id) || (s.pcm ? { state: 'ok', msg: '✅ 已就绪' } : { state: 'wait', msg: '待合成' });
+        const cardCls = stObj.state === 'ok' ? 'ok' : (stObj.state === 'err' ? 'err' : (stObj.state === 'ing' ? 'ing' : ''));
+        const aiPrompt = buildExternalAiVisualPrompt(s, idx);
+
+        return `
+        <div class="shot-card ${cardCls}" id="shotCard_${s.id}" onclick="activeShotId='${s.id}';drawSpatialRadar(${s.startMs + 50})">
+            <div class="flex items-center justify-between flex-wrap gap-2 mb-1.5">
+                <div class="flex items-center gap-2 flex-wrap">
+                    <span class="font-bold text-xs text-white">#${idx + 1} ${s.role}</span>
+                    <span class="ms-badge">⏱️ ${(s.startMs/1000).toFixed(2)}s ~ ${(endMs/1000).toFixed(2)}s</span>
+                    <span class="pos-badge">📍 X:${s.x.toFixed(2)}, Y:${s.y.toFixed(2)}</span>
+                    <span id="shotBadge_${s.id}" class="text-[11px] font-bold px-2 py-0.5 rounded ${stObj.state === 'ok' ? 'bg-emerald-500/20 text-emerald-300' : (stObj.state === 'err' ? 'bg-rose-500/30 text-rose-200' : 'bg-white/10 text-slate-300')}">${stObj.msg}</span>
+                </div>
+                <div class="flex items-center gap-1.5 flex-wrap" onclick="event.stopPropagation()">
+                    <select onchange="changeSingleShotVoice('${s.id}', this.value)" style="width:140px;padding:3px 6px;font-size:11px">
+                        ${ENSEMBLE_VOICES.map(v => `<option value="${v.id}" ${v.id === s.voice ? 'selected' : ''}>${v.id} · ${v.label.split('·')[1] || v.id}</option>`).join('')}
+                    </select>
+                    <button type="button" onclick="auditionShotById('${s.id}', false)" class="btn py-1 px-2.5 text-[11px] btn-gold">▶ 试听本句</button>
+                    <button type="button" onclick="auditionShotById('${s.id}', true)" class="btn py-1 px-2.5 text-[11px] btn-blue">↻ 强制重录</button>
+                    <button type="button" onclick="downloadSingleShotMp3('${s.id}', ${idx + 1})" class="btn py-1 px-2 text-[11px] btn-green">📥 单句MP3</button>
+                </div>
+            </div>
+            <div class="mb-1.5" onclick="event.stopPropagation()">
+                <input value="${s.text.replace(/"/g, '&quot;')}" oninput="updateShotText('${s.id}', this.value)" class="text-xs bg-black/60 border-white/15 text-white font-medium">
+            </div>
+            <div class="bg-black/70 border border-white/10 rounded p-1.5 text-[10px] font-mono text-emerald-300/90 select-all">
+                ${aiPrompt}
+            </div>
+        </div>`;
+    }).join('');
+}
+
+function updateShotText(shotId, newText) {
+    const shot = currentDrama.shots.find(s => s.id === shotId);
+    if (!shot) return;
+    shot.text = newText;
+    delete shot.pcm;
+    shotStatusMap.set(shotId, { state: 'wait', msg: '✏️已改字·点试听重录' });
+}
+
+function changeSingleShotVoice(shotId, newVoiceId) {
+    const shot = currentDrama.shots.find(s => s.id === shotId);
+    if (!shot) return;
+    shot.voice = newVoiceId;
+    delete shot.pcm;
+    shotStatusMap.set(shotId, { state: 'wait', msg: `已换${newVoiceId}` });
+    auditionShotById(shotId, true);
+}
+
+function base64ToInt16Array(b64) {
+    const bin = window.atob(b64), arr = new Uint8Array(bin.length);
+    for (let i = 0; i < bin.length; i++) arr[i] = bin.charCodeAt(i);
+    return new Int16Array(arr.buffer);
+}
+
+function trimPcmSilence(pcm, sr = 24000) {
+    let s = 0, e = pcm.length - 1;
+    while (s < e && Math.abs(pcm[s]) < 200) s++;
+    while (e > s && Math.abs(pcm[e]) < 200) e--;
+    const pad = Math.floor(sr * 0.025);
+    return pcm.subarray(Math.max(0, s - pad), Math.min(pcm.length, e + pad));
+}
+
+function sanitizeSpokenText(rawText) {
+    return rawText
+        .replace(/（[^）]*）/g, '')
+        .replace(/\([^)]*\)/g, '')
+        .replace(/吃人家老板娘/g, '把人家老板娘拐跑')
+        .replace(/吃你老婆/g, '娶你老婆')
+        .trim();
+}
+
+function buildMasterDirectorPrompt(shot, minimalMode = false) {
+    const cleanText = sanitizeSpokenText(shot.text);
+    if (minimalMode) {
+        return `请用自然生动的中文夹杂地道越南语单词朗读：\n${cleanText}`;
+    }
+    const vInfo = ENSEMBLE_VOICES.find(v => v.id === shot.voice) || ENSEMBLE_VOICES[0];
+    return `请用${vInfo.persona}的声线，带着「${shot.tone}」的语气自然演绎以下台词（遇到越南语单词如 đi, đồ ngốc 时发音地道清晰，绝不要朗读提示词；整体语速比平时稍快一点，节奏利落不拖沓）：\n${cleanText}`;
+}
+
+function speedUpPcm(pcm, factor) {
+    const n = Math.floor(pcm.length / factor);
+    const out = new Int16Array(n);
+    for (let i = 0; i < n; i++) {
+        const p = i * factor, k = Math.floor(p), f = p - k;
+        const a = pcm[k], b = pcm[Math.min(k + 1, pcm.length - 1)];
+        out[i] = a + (b - a) * f;
+    }
+    return out;
+}
+
+async function fetchWithTimeout(url, options, timeoutMs = 15000) {
+    let timer = null;
+    const timeoutPromise = new Promise((_, reject) => {
+        timer = setTimeout(() => {
+            const err = new Error('请求超时');
+            err.name = 'AbortError';
+            reject(err);
+        }, timeoutMs);
+    });
+    try {
+        return await Promise.race([fetch(url, options), timeoutPromise]);
+    } finally {
+        clearTimeout(timer);
+    }
+}
+
+async function synthShotVoice(shot, forceFresh = false) {
+    const cleanText = sanitizeSpokenText(shot.text);
+    const cacheKey = `${shot.voice}|${cleanText}`;
+    if (!forceFresh && ttsAudioCache.has(cacheKey)) {
+        shot.pcm = ttsAudioCache.get(cacheKey);
+        shot.durMs = Math.round((shot.pcm.length / 24000) * 1000);
+        shotStatusMap.set(shot.id, { state: 'ok', msg: '✅ 已就绪' });
+        return shot.pcm;
+    }
+
+    shotStatusMap.set(shot.id, { state: 'ing', msg: '⏳ 录制中...' });
+    const badgeEl = $(`shotBadge_${shot.id}`);
+    if (badgeEl) {
+        badgeEl.textContent = '⏳ 录制中...';
+        badgeEl.className = 'text-[11px] font-bold px-2 py-0.5 rounded bg-amber-500/30 text-amber-200';
+    }
+
+    ensureKey();
+    const ttsModels = ['gemini-2.5-flash-preview-tts', 'gemini-2.5-flash-preview-tts', 'gemini-2.5-pro-preview-tts'];
+    const fallbackVoices = [shot.voice, 'Orus', 'Puck'];
+
+    let lastErr = '网络波动';
+    for (let a = 0; a < 3; a++) {
+        const useVoice = fallbackVoices[a] || shot.voice;
+        const url = `https://generativelanguage.googleapis.com/v1beta/models/${ttsModels[a] || ttsModels[0]}:generateContent?key=${apiKey}`;
+        const prompt = buildMasterDirectorPrompt(shot, a >= 1);
+        try {
+            const res = await fetchWithTimeout(url, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    contents: [{ parts: [{ text: prompt }] }],
+                    generationConfig: {
+                        responseModalities: ['AUDIO'],
+                        speechConfig: { voiceConfig: { prebuiltVoiceConfig: { voiceName: useVoice } } }
+                    }
+                })
+            }, 15000);
+
+            if (res.ok) {
+                const data = await res.json();
+                const cand = data?.candidates?.[0];
+                const part = (cand?.content?.parts || []).find(p => p.inlineData && p.inlineData.data) || cand?.content?.parts?.[0];
+                const b64 = part?.inlineData?.data;
+                if (b64) {
+                    const pcm = speedUpPcm(trimPcmSilence(base64ToInt16Array(b64), 24000), 1.05);
+                    ttsAudioCache.set(cacheKey, pcm);
+                    shot.pcm = pcm;
+                    shot.durMs = Math.round((pcm.length / 24000) * 1000);
+                    shotStatusMap.set(shot.id, { state: 'ok', msg: `✅ 就绪 (${useVoice})` });
+                    return pcm;
+                } else {
+                    lastErr = cand?.finishReason || '未返回音频流';
+                }
+            } else {
+                let ed = null; try { ed = await res.json(); } catch (_) {}
+                lastErr = apiErrText(res.status, ed);
+                if (res.status === 400 || res.status === 403) { a = 3; }
+            }
+        } catch (err) {
+            lastErr = err.name === 'AbortError' ? '超时切备用声纹' : err.message;
+        }
+        await new Promise(r => setTimeout(r, 1000 * (a + 1)));
+    }
+
+    shotStatusMap.set(shot.id, { state: 'err', msg: `❌ ${lastErr} (点↻重录)` });
+    throw new Error(`[${shot.role}] ${lastErr}`);
+}
+
+async function auditionShotById(shotId, forceFresh = false) {
+    const shot = currentDrama.shots.find(s => s.id === shotId);
+    if (!shot) return;
+    activeShotId = shotId;
+    showMsg(`⏳ 正在单独合成并试听 [${shot.role} · ${shot.voice}]...`);
+    try {
+        await synthShotVoice(shot, forceFresh);
+        renderAll();
+        const singleBuf = await renderWithMasterChain([shot], 24000, false);
+        const mp3Blob = encodeBufferToMp3(singleBuf);
+        const url = URL.createObjectURL(mp3Blob);
+        const player = $('quickMasterPlayer');
+        if (player) {
+            player.src = url;
+            player.classList.remove('hidden');
+            await player.play();
+        }
+        showMsg(`🔊 正在播放 [${shot.role}]：“${shot.text.slice(0, 24)}...”`);
+    } catch (e) {
+        renderAll();
+        showMsg(`❌ 单句试听失败：${e.message}`);
+    }
+}
+
+async function downloadSingleShotMp3(shotId, num) {
+    const shot = currentDrama.shots.find(s => s.id === shotId);
+    if (!shot) return;
+    try {
+        if (!shot.pcm) await synthShotVoice(shot, false);
+        renderAll();
+        const singleBuf = await renderWithMasterChain([shot], 24000, false);
+        const mp3Blob = encodeBufferToMp3(singleBuf);
+        const url = URL.createObjectURL(mp3Blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `第${num}句_${shot.role}.mp3`;
+        document.body.appendChild(a);
+        a.click();
+        setTimeout(() => document.body.removeChild(a), 300);
+        showMsg(`✅ 已下载第 #${num} 句 [${shot.role}] 的独立 MP3！`);
+    } catch (e) {
+        showMsg(`❌ 下载失败：${e.message}`);
+    }
+}
+
+async function renderWithMasterChain(shotsList, sr = 24000, includeRoomAmbience = true) {
+    const readyShots = shotsList.filter(s => s && s.pcm);
+    if (!readyShots.length) throw new Error('当前还没有已录好的语音片段');
+
+    const styleMode = $('masterStylePreset') ? $('masterStylePreset').value : 'classroom';
+    const maxEndMs = Math.max(2500, ...readyShots.map(s => (readyShots.length === 1 ? 0 : s.startMs) + (s.durMs || 4000))) + 1200;
+    const totalSec = maxEndMs / 1000;
+    const oc = new OfflineAudioContext(2, Math.ceil(totalSec * sr), sr);
+
+    const masterComp = oc.createDynamicsCompressor();
+    masterComp.threshold.value = -16;
+    masterComp.knee.value = 18;
+    masterComp.ratio.value = 3.0;
+    masterComp.attack.value = 0.008;
+    masterComp.release.value = 0.18;
+    masterComp.connect(oc.destination);
+
+    let revConvolver = null;
+    if (includeRoomAmbience && styleMode !== 'clean') {
+        const revDur = styleMode === 'classroom' ? 0.35 : 1.35;
+        const revDecay = styleMode === 'classroom' ? 9.5 : 3.2;
+        const revWet = styleMode === 'classroom' ? 0.13 : 0.22;
+        const len = Math.floor(sr * revDur);
+        const ir = oc.createBuffer(2, len, sr);
+        for (let ch = 0; ch < 2; ch++) {
+            const d = ir.getChannelData(ch);
+            for (let i = 0; i < len; i++) d[i] = (Math.random() * 2 - 1) * Math.exp(-i / (sr / revDecay));
+        }
+        revConvolver = oc.createConvolver();
+        revConvolver.buffer = ir;
+        const revFilter = oc.createBiquadFilter();
+        revFilter.type = 'lowpass';
+        revFilter.frequency.value = 3600;
+        const wetGain = oc.createGain();
+        wetGain.gain.value = revWet;
+        revConvolver.connect(revFilter);
+        revFilter.connect(wetGain);
+        wetGain.connect(masterComp);
+    }
+
+    readyShots.forEach(s => {
+        const vInfo = ENSEMBLE_VOICES.find(v => v.id === s.voice) || ENSEMBLE_VOICES[0];
+        const b = oc.createBuffer(1, s.pcm.length, sr);
+        const ch = b.getChannelData(0);
+        for (let i = 0; i < s.pcm.length; i++) ch[i] = s.pcm[i] / 32768;
+
+        const src = oc.createBufferSource();
+        src.buffer = b;
+
+        const lowShelf = oc.createBiquadFilter();
+        lowShelf.type = 'lowshelf';
+        lowShelf.frequency.value = 115;
+        lowShelf.gain.value = (vInfo.fx / 100) * 5.0;
+
+        const highShelf = oc.createBiquadFilter();
+        highShelf.type = 'highshelf';
+        highShelf.frequency.value = 3200;
+        highShelf.gain.value = (vInfo.air / 100) * 3.6;
+
+        const pan = oc.createStereoPanner();
+        pan.pan.value = readyShots.length === 1 ? 0 : Math.max(-0.85, Math.min(0.85, s.x || 0));
+
+        const vGain = oc.createGain();
+        vGain.gain.value = 1.06;
+
+        src.connect(lowShelf);
+        lowShelf.connect(highShelf);
+        highShelf.connect(pan);
+        pan.connect(vGain);
+        vGain.connect(masterComp);
+        if (revConvolver) vGain.connect(revConvolver);
+
+        const startT = readyShots.length === 1 ? 0.05 : Math.max(0, s.startMs / 1000);
+        src.start(startT);
+    });
+
+    return await oc.startRendering();
+}
+
+async function forceMixAvailableShotsNow() {
+    const readyCount = currentDrama.shots.filter(s => s.pcm).length;
+    if (!readyCount) {
+        showMsg('⚠️ 目前还没有已录好的句子，请先点金色按钮合成，或点单句「▶ 试听本句」');
+        return;
+    }
+    await rebuildMasterMixOnly();
+    playTimelinePreview();
+}
+
+async function rebuildMasterMixOnly() {
+    if (!currentDrama.shots.some(s => s.pcm)) return;
+    recalcMillisecondTimeline();
+    mixedMasterBuffer = await renderWithMasterChain(currentDrama.shots, 24000, true);
+    const mp3Blob = encodeBufferToMp3(mixedMasterBuffer);
+    mixedMasterBlob = mp3Blob;
+    if (mixedMasterMp3Url) URL.revokeObjectURL(mixedMasterMp3Url);
+    mixedMasterMp3Url = URL.createObjectURL(mp3Blob);
+    const player = $('quickMasterPlayer');
+    if (player) {
+        player.src = mixedMasterMp3Url;
+        player.classList.remove('hidden');
+    }
+    const okCnt = currentDrama.shots.filter(s => s.pcm).length;
+    showMsg(`✨ 已将就绪的 ${okCnt}/${currentDrama.shots.length} 句合成为立体声母带！`);
+}
+
+async function synthesizeAllEnsembleVoices() {
+    const btn = $('synthAllBtn');
+    const prog = $('synthProgressBar');
+    btn.disabled = true;
+    prog.classList.remove('hidden');
+
+    const shots = currentDrama.shots;
+    let done = 0, failed = 0;
+
+    let idx = 0;
+    const worker = async () => {
+        while (idx < shots.length) {
+            const cur = shots[idx++];
+            prog.textContent = `🎙️ 正在合成 (${done + failed + 1}/${shots.length})：[${cur.role} · ${cur.voice}]...`;
+            try {
+                await synthShotVoice(cur, false);
+                done++;
+            } catch (e) {
+                failed++;
+            }
+            renderShotSheet();
+        }
+    };
+
+    await Promise.all([worker(), worker()]);
+
+    if (done > 0) {
+        prog.textContent = `🏫 正在将成功录制的 ${done} 句合成为 3D 教室声场母带...`;
+        await rebuildMasterMixOnly();
+        prog.textContent = failed === 0
+            ? `✅ 全剧 ${done}/${shots.length} 句全部合成成功！正在自动播放...`
+            : `⚠️ 已为您合成并播放 ${done} 句！有 ${failed} 句未录上（单独点它的「↻ 强制重录」即可补齐）`;
+        playTimelinePreview();
+    } else {
+        prog.textContent = `❌ 接口当前限流，请等 5 秒后再点一次！`;
+    }
+    btn.disabled = false;
+}
+
+function encodeBufferToMp3(abuf) {
+    const sr = abuf.sampleRate, L = abuf.getChannelData(0), R = abuf.getChannelData(1);
+    let pk = 0;
+    for (let i = 0; i < L.length; i++) pk = Math.max(pk, Math.abs(L[i]), Math.abs(R[i]));
+    const norm = pk > 0.96 ? 0.96 / pk : 1.0;
+
+    const mono = new Int16Array(L.length);
+    for (let i = 0; i < L.length; i++) {
+        mono[i] = Math.max(-1, Math.min(1, ((L[i] + R[i]) * 0.5) * norm)) * 32767;
+    }
+    if (typeof lamejs === 'undefined') {
+        const wavBuf = new ArrayBuffer(44 + mono.length * 2);
+        const view = new DataView(wavBuf);
+        const writeStr = (o, s) => { for (let i = 0; i < s.length; i++) view.setUint8(o + i, s.charCodeAt(i)); };
+        writeStr(0, 'RIFF'); view.setUint32(4, 36 + mono.length * 2, true);
+        writeStr(8, 'WAVEfmt '); view.setUint32(16, 16, true); view.setUint16(20, 1, true); view.setUint16(22, 1, true);
+        view.setUint32(24, sr, true); view.setUint32(28, sr * 2, true); view.setUint16(32, 2, true); view.setUint16(34, 16, true);
+        writeStr(36, 'data'); view.setUint32(40, mono.length * 2, true);
+        for (let i = 0, o = 44; i < mono.length; i++, o += 2) view.setInt16(o, mono[i], true);
+        return new Blob([view], { type: 'audio/wav' });
+    }
+    const enc = new lamejs.Mp3Encoder(1, sr, 128), out = [], bs = 1152;
+    for (let i = 0; i < mono.length; i += bs) {
+        const b = enc.encodeBuffer(mono.subarray(i, i + bs));
+        if (b.length > 0) out.push(b);
+    }
+    const f = enc.flush(); if (f.length > 0) out.push(f);
+    return new Blob(out, { type: 'audio/mpeg' });
+}
+
+async function playTimelinePreview() {
+    stopTimelinePreview();
+    if (!mixedMasterBuffer) {
+        if (currentDrama.shots.some(s => s.pcm)) {
+            await rebuildMasterMixOnly();
+        } else {
+            await synthesizeAllEnsembleVoices();
+            return;
+        }
+    }
+    previewCtx = new (window.AudioContext || window.webkitAudioContext)();
+    const src = previewCtx.createBufferSource();
+    src.buffer = mixedMasterBuffer;
+    src.connect(previewCtx.destination);
+    src.start(0);
+    isPlaying = true;
+
+    const t0 = performance.now();
+    const totalMs = mixedMasterBuffer.duration * 1000;
+
+    function tick(now) {
+        if (!isPlaying) return;
+        const elapsedMs = now - t0;
+        const ph = $('playhead');
+        if (ph) ph.style.left = `${142 + (elapsedMs / 1000) * PX_PER_SEC}px`;
+        drawSpatialRadar(elapsedMs);
+        if (elapsedMs < totalMs) {
+            animFrameId = requestAnimationFrame(tick);
+        } else {
+            isPlaying = false;
+        }
+    }
+    animFrameId = requestAnimationFrame(tick);
+}
+
+function stopTimelinePreview() {
+    isPlaying = false;
+    if (animFrameId) cancelAnimationFrame(animFrameId);
+    if (previewCtx) {
+        try { previewCtx.close(); } catch (e) {}
+        previewCtx = null;
+    }
+}
+
+function generateFullDirectorDocumentText() {
+    const lines = [];
+    lines.push(`# 🇻🇳 《${currentDrama.title}》配音脚本、秒级音效打点与 Claude 毫秒级画面渲染总表`);
+    lines.push(`- 全局场景：${currentDrama.sceneGlobal}\n`);
+    lines.push(buildSfxCueSheetText());
+    lines.push(`\n## 三、 逐句毫秒级 Claude / AI 视频画面渲染指令`);
+    currentDrama.shots.forEach((s, idx) => {
+        const endMs = s.startMs + (s.durMs || 4000);
+        lines.push(`\n### 【镜头 #${idx + 1}】 ${formatMsToTimecode(s.startMs)} --> ${formatMsToTimecode(endMs)} (${s.startMs}ms - ${endMs}ms)`);
+        lines.push(`- **角色与声纹**：${s.role} (声纹: ${s.voice} | 教室坐标 X:${s.x.toFixed(2)}, Y:${s.y.toFixed(2)})`);
+        lines.push(`- **机位与动作**：${s.cam} | ${s.action}（语气：${s.tone}）`);
+        lines.push(`- **台词**：「${s.text}」`);
+        lines.push(`- **AI 画面渲染 Prompt**：\`${buildExternalAiVisualPrompt(s, idx)}\``);
+    });
+    return lines.join('\n');
+}
+
+function downloadDirectorScript(fmt = 'md') {
+    let content = '';
+    let ext = 'txt';
+    if (fmt === 'json') {
+        content = JSON.stringify({
+            project_title: currentDrama.title,
+            global_classroom_scene: currentDrama.sceneGlobal,
+            sfx_spotting_list_seconds: currentDrama.sfxCues || [],
+            millisecond_timeline_for_claude: currentDrama.shots.map((s, idx) => ({
+                shot_index: idx + 1,
+                start_ms: s.startMs,
+                end_ms: s.startMs + (s.durMs || 4000),
+                duration_ms: s.durMs || 4000,
+                start_sec: +(s.startMs / 1000).toFixed(2),
+                end_sec: +((s.startMs + (s.durMs || 4000)) / 1000).toFixed(2),
+                speaker: s.role,
+                voice_id: s.voice,
+                classroom_coordinate: { x: s.x, y: s.y, stereo_pan: s.x, seat_desc: s.posDesc },
+                camera_instruction: s.cam,
+                character_action: s.action,
+                emotion_tone: s.tone,
+                dialogue_text: s.text,
+                visual_render_prompt: buildExternalAiVisualPrompt(s, idx)
+            }))
+        }, null, 2);
+        ext = 'json';
+    } else {
+        content = generateFullDirectorDocumentText();
+        ext = 'txt';
+    }
+
+    const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    window._lastExportText = content;
+    window._lastExportName = `${currentDrama.title}_Claude毫秒级渲染数据包.${ext}`;
+
+    $('expTitle').textContent = `📦 《${window._lastExportName}》已生成`;
+    $('expSub').textContent = `可直接下载或一键复制喂给 Claude / 剪映同步渲染画面`;
+    $('expDlBtn').href = url;
+    $('expDlBtn').download = window._lastExportName;
+    $('expCopyBtn').classList.remove('hidden');
+    $('expMediaBox').innerHTML = `<textarea readonly rows="12" class="w-full text-[11px] font-mono bg-black text-emerald-300 p-2 rounded border-0">${content}</textarea>`;
+    $('exportModal').style.display = 'flex';
+}
+
+function downloadEnsembleMp3() {
+    if (!mixedMasterMp3Url) {
+        if (currentDrama.shots.some(s => s.pcm)) {
+            forceMixAvailableShotsNow().then(() => downloadEnsembleMp3());
+        } else {
+            synthesizeAllEnsembleVoices();
+        }
+        return;
+    }
+    window._lastExportName = `${currentDrama.title}_多人实景配音.mp3`;
+    $('expTitle').textContent = `🎧 《${window._lastExportName}》已就绪`;
+    $('expSub').textContent = `教室3D声道定位 + 抢话叠音已自动对齐`;
+    $('expDlBtn').href = mixedMasterMp3Url;
+    $('expDlBtn').download = window._lastExportName;
+    $('expCopyBtn').classList.add('hidden');
+    $('expMediaBox').innerHTML = `<audio src="${mixedMasterMp3Url}" controls autoplay class="w-full"></audio>`;
+    $('exportModal').style.display = 'flex';
+}
+
+function copyFullDirectorPrompt() {
+    copyTextToClipboard(generateFullDirectorDocumentText());
+    showMsg('📋 已一键复制全剧《脚本 + 秒级音效单 + 毫秒级画面指令》！');
+}
+
+function copyModalText() {
+    if (window._lastExportText) copyTextToClipboard(window._lastExportText);
+}
+
+function copyTextToClipboard(text) {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).catch(() => {});
+    }
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+    showMsg('📋 已复制到剪贴板！');
+}
+
+renderSeedCurriculum();
+loadPresetDrama('ep01_jia_bao');
 </script>
 </body>
 </html>
